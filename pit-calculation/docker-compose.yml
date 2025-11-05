@@ -1,0 +1,16 @@
+services:
+  app:
+    container_name: my-react-app
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/app:delegated
+      - /app/node_modules
+      - /app/.vite
+    ports:
+      - 3000:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - VITE_HMR_HOST=localhost
+    command: npm run dev

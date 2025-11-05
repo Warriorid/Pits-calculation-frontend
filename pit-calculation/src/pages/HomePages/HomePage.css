@@ -1,0 +1,35 @@
+/* pages/HomePage.css */
+.home-container {
+    padding: 60px 20px;
+    min-height: calc(100vh - 76px);
+    display: flex;
+    align-items: center;
+  }
+  
+  .home-title {
+    font: 700 48px 'Roboto', sans-serif;
+    margin-bottom: 24px;
+    color: #333;
+  }
+  
+  .home-description {
+    font: 500 20px/1.6 'Roboto', sans-serif;
+    margin-bottom: 40px;
+    color: #666;
+  }
+  
+  .home-button {
+    padding: 14px 32px;
+    font: 500 18px 'Roboto', sans-serif;
+    border-radius: 8px;
+  }
+  
+  @media (max-width: 768px) {
+    .home-title {
+      font-size: 36px;
+    }
+    
+    .home-description {
+      font-size: 18px;
+    }
+  }

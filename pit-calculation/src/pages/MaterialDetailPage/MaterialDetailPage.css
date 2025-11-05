@@ -1,0 +1,120 @@
+/* pages/MaterialDetailPage.css */
+.material-button-container {
+    margin: 20px 0;
+    padding: 0 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.material-back {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #FFCD11;
+    color: #000;
+    text-decoration: none;
+    border-radius: 8px;
+    font: 500 16px 'Roboto', sans-serif;
+    transition: background-color 0.3s;
+}
+
+.material-back:hover {
+    background: #E6B910;
+    color: #000;
+    text-decoration: none;
+}
+
+.material-detail-section {
+    padding: 0 20px;
+}
+
+.material-detail-container {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.material-detail-image {
+    flex: 0 0 400px;
+}
+
+.material-detail-image img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.material-detail-content {
+    flex: 1;
+}
+
+.material-detail-title {
+    font: 700 40px 'Roboto', sans-serif;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.material-detail-coefficient {
+    font: 500 24px 'Roboto', sans-serif;
+    margin-bottom: 30px;
+    color: #666;
+}
+
+.material-detail-coefficient span {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
+.material-detail-description {
+    font: 500 18px/1.6 'Roboto', sans-serif;
+    margin: 0;
+    color: #555;
+}
+
+@media (max-width: 900px) {
+    .material-detail-container {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .material-detail-image {
+        flex: none;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .material-detail-title {
+        font-size: 32px;
+        text-align: center;
+    }
+    
+    .material-detail-coefficient {
+        font-size: 20px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .material-detail-container {
+        padding: 20px;
+    }
+    
+    .material-detail-title {
+        font-size: 28px;
+    }
+    
+    .material-detail-coefficient {
+        font-size: 18px;
+    }
+    
+    .material-detail-description {
+        font-size: 16px;
+    }
+}

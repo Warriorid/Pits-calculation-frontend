@@ -1,0 +1,46 @@
+.pit-button-container {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.pit-button {
+    width: 62px;
+    height: 62px;
+    background-color: #FFCD11;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.pit-button:hover {
+    background-color: #E6B910;
+}
+
+.pit-button.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pit-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.pit-count {
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.pit-button-link {
+    text-decoration: none;
+}

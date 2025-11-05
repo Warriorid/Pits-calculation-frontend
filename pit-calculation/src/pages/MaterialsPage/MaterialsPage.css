@@ -1,0 +1,190 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans', 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #F8F8F8;
+    line-height: 1.6;
+    overflow-x: hidden; 
+    min-width: 100%; 
+}
+
+#root {
+    min-height: 100vh;
+    width: 100%; 
+}
+
+.main-content {
+    width: 100%; 
+    padding: 20px;
+    position: relative;
+}
+
+.loadingBg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.materials-section {
+    width: 100%;
+}
+
+.materials-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px; 
+    margin: 0 auto;
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.no-results h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+/* Новый контейнер для поиска и корзины */
+.search-pit-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.search-wrapper {
+    flex: 0 1 750px; /* Фиксированная максимальная ширина */
+    margin: 0;
+}
+
+.pit-button-container {
+    flex-shrink: 0;
+    margin: 0;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .materials-container {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 800px;
+    }
+    
+    .search-pit-container {
+        gap: 15px;
+    }
+    
+    .search-wrapper {
+        flex: 0 1 600px;
+    }
+}
+
+@media (max-width: 768px) {
+    .materials-container {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        gap: 15px;
+    }
+    
+    .main-content {
+        padding: 15px;
+    }
+    
+    .search-pit-container {
+        flex-direction: row; /* Оставляем в строке */
+        gap: 15px;
+        padding: 0 15px;
+        margin: 0 auto 30px;
+    }
+    
+    .search-wrapper {
+        flex: 1; /* Занимает всё доступное пространство */
+        max-width: none;
+    }
+    
+    .pit-button-container {
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .materials-container {
+        gap: 12px;
+    }
+    
+    .main-content {
+        padding: 10px;
+    }
+    
+    .search-pit-container {
+        gap: 12px;
+        padding: 0 10px;
+        margin: 0 auto 25px;
+    }
+    
+    .no-results {
+        padding: 40px 15px;
+    }
+    
+    .no-results h1 {
+        font-size: 20px;
+    }
+    
+    .pit-button {
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        padding: 12px;
+    }
+    
+    .pit-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .pit-count {
+        font-size: 12px;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .search-pit-container {
+        gap: 10px;
+    }
+    
+    .pit-button {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        padding: 10px;
+    }
+    
+    .pit-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
