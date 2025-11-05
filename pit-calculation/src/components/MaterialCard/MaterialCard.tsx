@@ -1,3 +1,4 @@
+// MaterialCard.tsx
 import { FC } from 'react'
 import './MaterialCard.css'
 
@@ -21,6 +22,11 @@ const MaterialCard: FC<Props> = ({
         e.currentTarget.src = '/static/img/defaultImage.png'
     }
 
+    const handleAddToPit = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        console.log('Функция "Добавить" временно недоступна')
+    }
+
     return (
         <div className="material-card" onClick={() => onCardClick(id)}>
             <div className="material-image">
@@ -36,8 +42,8 @@ const MaterialCard: FC<Props> = ({
                     Коэффициент разрыхления: <span>{coefficient}</span>
                 </p>
                 <div className="material-actions">
-                    <form className="add-to-pit-form" onClick={(e) => e.stopPropagation()}>
-                        <button type="submit" className="add-to-pit-button">
+                    <form className="add-to-pit-form" onClick={handleAddToPit}>
+                        <button type="button" className="add-to-pit-button" disabled>
                             Добавить
                         </button>
                     </form>

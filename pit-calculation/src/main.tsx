@@ -13,6 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<HomePage />} />
         <Route path="/materials" element={<MaterialsPage />} />
         <Route path="/materials/:id" element={<MaterialDetailPage />} />
+        <Route path="*" element={<div>Страница не найдена</div>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

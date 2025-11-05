@@ -21,7 +21,7 @@ export default defineConfig({
       overlay: false
     }
   },
-  // ПРАВИЛЬНЫЕ настройки esbuild
+
   esbuild: {
     include: /\.(ts|tsx|js|jsx)$/,
     exclude: /node_modules/,

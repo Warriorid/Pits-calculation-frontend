@@ -7,6 +7,8 @@ import Header from '../../components/Header/Header'
 import PitButton from '../../components/PitButton/PitButton'
 import InputField from '../../components/InputField/InputField'
 import MaterialCard from '../../components/MaterialCard/MaterialCard'
+import { BreadCrumbs } from '../../components/BreadCrumbs/BreadCrumbs'
+import { ROUTE_LABELS } from '../../Routers'
 import './MaterialsPage.css'
 
 const MaterialsPage: FC = () => {
@@ -58,6 +60,8 @@ const MaterialsPage: FC = () => {
         <>
             <Header />
             <main className="main-content">
+                <BreadCrumbs crumbs={[{ label: ROUTE_LABELS.MATERIALS }]} />
+                
                 <div className="search-pit-container">
                     <div className="search-wrapper">
                         <InputField
