@@ -1,4 +1,5 @@
-// modules/materialsApi.ts
+import { MATERIALS_MOCK } from './mock';
+
 export interface Material {
     id: number
     title: string
@@ -9,34 +10,51 @@ export interface Material {
 }
 
 export const getMaterials = async (materialTitle = ''): Promise<Material[]> => {
-    const params = new URLSearchParams()
-    if (materialTitle) {
-        params.append('materialTitle', materialTitle)
+    try {
+        const params = new URLSearchParams()
+        if (materialTitle) {
+            params.append('materialTitle', materialTitle)
+        }
+        
+        const response = await fetch(`http://localhost:8080/api/materials?${params}`)
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch materials')
+        }
+        
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error fetching materials, using mock data:', error)
+        if (materialTitle.trim() === '') {
+            return MATERIALS_MOCK.filter(material => !material.is_deleted)
+        }
+        
+        return MATERIALS_MOCK.filter(material => 
+            !material.is_deleted && 
+            material.title.toLowerCase().includes(materialTitle.toLowerCase())
+        )
     }
-    
-    return fetch(`http://localhost:8080/api/materials?${params}`)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch materials')
-            }
-            return response.json()
-        })
-        .catch((error) => {
-            console.error('Error fetching materials:', error)
-            return []
-        })
 }
 
 export const getMaterialById = async (id: number): Promise<Material> => {
-    return fetch(`http://localhost:8080/api/materials/${id}`)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch material')
-            }
-            return response.json()
-        })
-        .catch((error) => {
-            console.error('Error fetching material:', error)
-            throw error
-        })
+    try {
+        const response = await fetch(`http://localhost:8080/api/materials/${id}`)
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch material')
+        }
+        
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error fetching material, using mock data:', error)
+        const mockMaterial = MATERIALS_MOCK.find(material => material.id === id && !material.is_deleted)
+        
+        if (!mockMaterial) {
+            throw new Error('Material not found')
+        }
+        
+        return mockMaterial
+    }
 }
