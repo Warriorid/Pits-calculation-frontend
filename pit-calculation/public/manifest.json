@@ -1,0 +1,26 @@
+{
+    "name": "Калькулятор котлованов",
+    "short_name": "Котлованы", 
+    "description": "Система расчета котлованов и строительных материалов",
+    "id": "/Pits-calculation-frontend/",
+    "start_url": "/Pits-calculation-frontend/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#FFCD11",
+    "orientation": "portrait-primary",
+    "categories": ["business", "productivity"],
+    "icons": [
+      {
+        "src": "/Pits-calculation-frontend/static/img/icon-192.png",
+        "type": "image/png",
+        "sizes": "192x192",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "/Pits-calculation-frontend/static/img/icon-512.png",
+        "type": "image/png",
+        "sizes": "512x512",
+        "purpose": "any maskable"
+      }
+    ]
+  }

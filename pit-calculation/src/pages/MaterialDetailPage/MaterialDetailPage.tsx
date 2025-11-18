@@ -4,6 +4,7 @@ import { Spinner } from 'react-bootstrap'
 import { Material, getMaterialById } from '../../modules/materialsApi'
 import Header from '../../components/Header/Header'
 import { BreadCrumbs } from '../../components/BreadCrumbs/BreadCrumbs'
+import { getStaticPath } from '../../utils/paths'
 import { ROUTES, ROUTE_LABELS } from '../../Routers'
 import './MaterialDetailPage.css'
 
@@ -13,7 +14,7 @@ const MaterialDetailPage: FC = () => {
     const [loading, setLoading] = useState(true)
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        e.currentTarget.src = '/static/img/defaultImage.png'
+        e.currentTarget.src = getStaticPath('static/img/defaultImage.png')
     }
 
     useEffect(() => {
@@ -34,7 +35,6 @@ const MaterialDetailPage: FC = () => {
         loadMaterial()
     }, [id])
 
-    // Хлебные крошки для детальной страницы
     const breadCrumbs = [
         { label: ROUTE_LABELS.MATERIALS, path: ROUTES.MATERIALS },
         { label: material?.title || 'Загрузка...' }
@@ -81,7 +81,7 @@ const MaterialDetailPage: FC = () => {
                     <div className="material-detail-container">
                         <div className="material-detail-image">
                             <img 
-                                src={material.image_url || '/static/img/defaultImage.png'} 
+                                src={material.image_url || getStaticPath('static/img/defaultImage.png')} 
                                 alt={material.title}
                                 onError={handleImageError}
                             />

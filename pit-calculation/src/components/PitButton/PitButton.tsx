@@ -1,4 +1,5 @@
 import { FC } from 'react'
+import { getStaticPath } from '../../utils/paths'
 import './PitButton.css'
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
     pitId?: number
 }
 
-const PitButton: FC<Props> = ({ pitCount, hasActivePit, pitId }) => {
+const PitButton: FC<Props> = ({ pitCount }) => {
     const handlePitClick = (e: React.MouseEvent) => {
         e.preventDefault()
         return -1
@@ -19,7 +20,7 @@ const PitButton: FC<Props> = ({ pitCount, hasActivePit, pitId }) => {
                 className="pit-button" 
                 onClick={handlePitClick}
             >
-                <img src="/static/img/basket_icon.png" alt="Котлован" className="pit-icon" />
+                <img src={getStaticPath('static/img/basket_icon.png')} alt="Котлован" className="pit-icon" />
                 <span className="pit-count">{pitCount}</span>
             </button>
         </div>
