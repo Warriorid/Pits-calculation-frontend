@@ -42,11 +42,6 @@ const MaterialCard: FC<Props> = ({
                     Коэффициент разрыхления: <span>{coefficient}</span>
                 </p>
                 <div className="material-actions">
-                    <form className="add-to-pit-form" onClick={handleAddToPit}>
-                        <button type="button" className="add-to-pit-button" disabled>
-                            Добавить
-                        </button>
-                    </form>
                     <button 
                         className="material-details"
                         onClick={(e) => {

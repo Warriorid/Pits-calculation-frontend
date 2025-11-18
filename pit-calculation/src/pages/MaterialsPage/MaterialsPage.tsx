@@ -1,4 +1,3 @@
-// pages/MaterialsPage.tsx
 import { FC, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Spinner } from 'react-bootstrap'
@@ -20,7 +19,7 @@ const MaterialsPage: FC = () => {
 
     const pitData = {
         pitCount: 0,
-        hasActivePit: false,
+        hasActivePit: true,
         pitId: 1
     }
 

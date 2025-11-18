@@ -8,25 +8,20 @@ interface Props {
 }
 
 const PitButton: FC<Props> = ({ pitCount, hasActivePit, pitId }) => {
-    const buttonContent = (
-        <button 
-            className={`pit-button ${!hasActivePit ? 'disabled' : ''}`} 
-            disabled={!hasActivePit}
-        >
-            <img src="/static/img/basket_icon.png" alt="Котлован" className="pit-icon" />
-            <span className="pit-count">{pitCount}</span>
-        </button>
-    )
+    const handlePitClick = (e: React.MouseEvent) => {
+        e.preventDefault()
+        return -1
+    }
 
     return (
         <div className="pit-button-container">
-            {hasActivePit ? (
-                <a href={`/pits-calculations/${pitId}`} className="pit-button-link">
-                    {buttonContent}
-                </a>
-            ) : (
-                buttonContent
-            )}
+            <button 
+                className="pit-button" 
+                onClick={handlePitClick}
+            >
+                <img src="/static/img/basket_icon.png" alt="Котлован" className="pit-icon" />
+                <span className="pit-count">{pitCount}</span>
+            </button>
         </div>
     )
 }
