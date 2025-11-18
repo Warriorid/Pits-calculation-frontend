@@ -29,7 +29,7 @@ export const HomePage: FC = () => {
         controls={false}
         className="background-video">
         <source 
-        src={getStaticPath("/static/videos/construction-background.MP4")} type="video/mp4" />
+          src={getStaticPath("/static/videos/construction-background.MP4")} type="video/mp4" />
           Ваш браузер не поддерживает видео.
       </video>
         
