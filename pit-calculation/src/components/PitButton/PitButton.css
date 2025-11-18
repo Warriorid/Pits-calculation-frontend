@@ -24,11 +24,6 @@
     background-color: #E6B910;
 }
 
-.pit-button.disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
 .pit-icon {
     width: 24px;
     height: 24px;
@@ -39,8 +34,4 @@
     font-size: 14px;
     font-weight: bold;
     margin-left: 5px;
-}
-
-.pit-button-link {
-    text-decoration: none;
 }
