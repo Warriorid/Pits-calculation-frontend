@@ -14,7 +14,6 @@ export default defineConfig({
         name: "Калькулятор котлованов",
         short_name: "Котлованы", 
         description: "Система расчета котлованов и строительных материалов",
-        id: "/Pits-calculation-frontend/",
         start_url: "/Pits-calculation-frontend/",
         display: "standalone",
         background_color: "#000000",
@@ -40,6 +39,10 @@ export default defineConfig({
     })
   ],
   base: '/Pits-calculation-frontend/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets'
+  },
   server: {
     port: 3000,
     host: '0.0.0.0'
