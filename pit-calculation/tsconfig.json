@@ -17,7 +17,8 @@
     "noFallthroughCasesInSwitch": true,
     "types": [
       "vite-plugin-pwa/info.d.ts",
-      "vite-plugin-pwa/client.d.ts"
+      "vite-plugin-pwa/client.d.ts",
+      "@tauri-apps/api"
     ]
   },
   "include": ["src", "vite.config.ts"]
