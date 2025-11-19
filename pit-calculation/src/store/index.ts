@@ -1,11 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import materialsReducer from './slices/materialsSlice'
-import pitReducer from './slices/pitSlice'
+import searchReducer from './slices/searchSlice'
 
 export const store = configureStore({
   reducer: {
-    materials: materialsReducer,
-    pit: pitReducer
+    search: searchReducer
   }
 })
 

@@ -1,19 +1,28 @@
 import { FC, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import { Spinner } from 'react-bootstrap'
 import { Material, getMaterials } from '../../modules/materialsApi'
 import Header from '../../components/Header/Header'
 import PitButton from '../../components/PitButton/PitButton'
-import InputField from '../../components/InputField/InputField'
+import SearchField from '../../components/SearchField/SearchField'
 import MaterialCard from '../../components/MaterialCard/MaterialCard'
 import { BreadCrumbs } from '../../components/BreadCrumbs/BreadCrumbs'
 import { ROUTE_LABELS } from '../../Routers'
+import { 
+  useSearchQuery, 
+  useSearchResults, 
+  useHasSearched, 
+  setSearchResults
+} from '../../store/slices/searchSlice'
 import './MaterialsPage.css'
 
 const MaterialsPage: FC = () => {
-    const [searchValue, setSearchValue] = useState('')
+    const dispatch = useDispatch()
+    const searchQuery = useSearchQuery()
+    const searchResults = useSearchResults()
+    const hasSearched = useHasSearched() 
     const [loading, setLoading] = useState(false)
-    const [materials, setMaterials] = useState<Material[]>([])
     const [allMaterials, setAllMaterials] = useState<Material[]>([])
     const navigate = useNavigate()
 
@@ -29,25 +38,21 @@ const MaterialsPage: FC = () => {
             const materialsData = await getMaterials('')
             const filteredMaterials = materialsData.filter(material => !material.is_deleted)
             setAllMaterials(filteredMaterials)
-            setMaterials(filteredMaterials)
             setLoading(false)
         }
-        
         loadInitialMaterials()
-    }, [])
+    }, [dispatch])
 
-    const handleSearch = (e?: React.FormEvent) => {
-        if (e) {
-            e.preventDefault()
-        }
-        
-        if (searchValue.trim() === '') {
-            setMaterials(allMaterials)
+    const materialsToShow = hasSearched ? searchResults : allMaterials
+
+    const handleSearch = () => {
+        if (searchQuery.trim() === '') {
+            dispatch(setSearchResults([]))
         } else {
             const filtered = allMaterials.filter(material =>
-                material.title.toLowerCase().includes(searchValue.toLowerCase())
+                material.title.toLowerCase().includes(searchQuery.toLowerCase())
             )
-            setMaterials(filtered)
+            dispatch(setSearchResults(filtered))
         }
     }
 
@@ -63,9 +68,7 @@ const MaterialsPage: FC = () => {
                 
                 <div className="search-pit-container">
                     <div className="search-wrapper">
-                        <InputField
-                            value={searchValue}
-                            setValue={setSearchValue}
+                        <SearchField
                             onSubmit={handleSearch}
                             loading={loading}
                             placeholder="Поиск грунта"
@@ -87,7 +90,7 @@ const MaterialsPage: FC = () => {
 
                 <section className="materials-section">
                     <div className="materials-container">
-                        {materials.map((material) => (
+                        {materialsToShow.map((material) => (
                             <MaterialCard 
                                 key={`material-${material.id}`}
                                 {...material}
@@ -97,7 +100,7 @@ const MaterialsPage: FC = () => {
                     </div>
                 </section>
 
-                {!materials.length && !loading && (
+                {!materialsToShow.length && !loading && (
                     <div className="no-results">
                         <h1>К сожалению, пока ничего не найдено :(</h1>
                     </div>
