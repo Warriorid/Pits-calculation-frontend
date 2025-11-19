@@ -13,7 +13,8 @@ import {
   useSearchQuery, 
   useSearchResults, 
   useHasSearched, 
-  setSearchResults
+  setSearchResults,
+  clearSearch
 } from '../../store/slices/searchSlice'
 import './MaterialsPage.css'
 
@@ -47,7 +48,8 @@ const MaterialsPage: FC = () => {
 
     const handleSearch = () => {
         if (searchQuery.trim() === '') {
-            dispatch(setSearchResults([]))
+            // ПОЛНОСТЬЮ СБРАСЫВАЕМ ПОИСК
+            dispatch(clearSearch()) // очищаем поле поиска и результаты
         } else {
             const filtered = allMaterials.filter(material =>
                 material.title.toLowerCase().includes(searchQuery.toLowerCase())

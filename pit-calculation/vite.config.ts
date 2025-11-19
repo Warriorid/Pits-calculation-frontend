@@ -1,8 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [
@@ -16,8 +14,8 @@ export default defineConfig({
         name: "Калькулятор котлованов",
         short_name: "Котлованы", 
         description: "Система расчета котлованов и строительных материалов",
-        id: "/pit-calculation/",
-        start_url: "/pit-calculation/",
+        id: "/Pits-calculation-frontend/",
+        start_url: "/Pits-calculation-frontend/",
         display: "standalone",
         background_color: "#000000",
         theme_color: "#FFCD11",
@@ -25,12 +23,12 @@ export default defineConfig({
         categories: ["business", "productivity"],
         icons: [
           {
-            src: "/pit-calculation/static/img/logo192.png",
+            src: "static/img/logo192.png",
             type: "image/png",
             sizes: "192x192"
           },
           {
-            src: "/pit-calculation/static/img/logo512.png",
+            src: "static/img/logo512.png",
             type: "image/png",
             sizes: "512x512"
           }
@@ -41,13 +39,9 @@ export default defineConfig({
       }
     })
   ],
-  base: '/pit-calculation/',
+  base: '/Pits-calculation-frontend/',
   server: {
     port: 3000,
-    host: '0.0.0.0',
-    https: {
-      key: readFileSync(resolve(process.cwd(), 'cert.key')),
-      cert: readFileSync(resolve(process.cwd(), 'cert.crt')),
-    }
+    host: '0.0.0.0'
   }
 })
