@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { getStaticPath } from '../../utils/paths'
+import { getStaticImagePath } from '../../utils/imageUtils'
 import './MaterialCard.css'
 
 interface Props {
@@ -19,14 +19,14 @@ const MaterialCard: FC<Props> = ({
     onCardClick
 }) => {
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        e.currentTarget.src = getStaticPath('static/img/defaultImage.png')
+        e.currentTarget.src = getStaticImagePath('defaultImage.png')  
     }
 
     return (
         <div className="material-card" onClick={() => onCardClick(id)}>
             <div className="material-image">
                 <img 
-                    src={image_url || getStaticPath('static/img/defaultImage.png')} 
+                    src={image_url || getStaticImagePath('defaultImage.png')}
                     alt={title}
                     onError={handleImageError}
                 />

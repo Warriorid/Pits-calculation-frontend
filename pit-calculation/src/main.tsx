@@ -7,32 +7,34 @@ import { HomePage } from './pages/HomePages/HomePage'
 import MaterialsPage from './pages/MaterialsPage/MaterialsPage'
 import MaterialDetailPage from './pages/MaterialDetailPage/MaterialDetailPage'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { registerSW } from 'virtual:pwa-register'
-
-import { isTauri } from './networkConfig';
+import { isTauri, API_BASE_URL } from './networkConfig';
 
 function App() {
   useEffect(() => {
     const checkTauri = async () => {
       if (isTauri) {
-        console.log('✅ Tauri environment detected');
-        
-        try {
-          console.log('Tauri app is running');
-          
-          // Проверка подключения к бэкенду
-          const API_BASE_URL = `http://192.168.1.70:8080/api`;
-          console.log('🔗 Backend URL:', API_BASE_URL);
-          
-          const response = await fetch(`${API_BASE_URL}/materials`);
-          const data = await response.json();
-          console.log('✅ Backend connection successful! Materials count:', data.length);
-          console.log('📦 Materials:', data.map((m: any) => m.title));
-        } catch (error) {
-          console.log('❌ Backend connection failed:', error);
-        }
+        console.log('Tauri environment detected');
       } else {
-        console.log('🌐 Browser environment');
+        console.log('Browser environment');
+      }
+
+      try {
+        console.log('Testing backend connection...');
+        
+        // Всегда используем полный URL
+        const testUrl = `${API_BASE_URL}/materials`;
+        console.log('Testing URL:', testUrl);
+        
+        const response = await fetch(testUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Backend connection successful! Materials count:', data.length);
+      } catch (error) {
+        console.log('Backend connection failed:', error);
+        console.log('Using mock data instead');
       }
     };
 
@@ -42,7 +44,6 @@ function App() {
   return (
     <Provider store={store}>
       <HashRouter>
-        {/* NetworkStatus удален отсюда */}
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/materials" element={<MaterialsPage />} />
@@ -59,7 +60,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <App />
   </React.StrictMode>,
 )
-
-if ("serviceWorker" in navigator) {
-  registerSW()
-}

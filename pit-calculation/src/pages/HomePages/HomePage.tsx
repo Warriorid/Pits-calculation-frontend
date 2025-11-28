@@ -2,7 +2,6 @@ import { FC } from "react";
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Container, Row, Col } from "react-bootstrap";
 import Header from "../../components/Header/Header";
-import { getStaticPath } from "../../utils/paths"; // Добавьте этот импорт
 import "./HomePage.css";
 
 export const HomePage: FC = () => {
@@ -20,18 +19,19 @@ export const HomePage: FC = () => {
       </Navbar>
       
       <div className="video-background">
-      <video 
-        autoPlay 
-        muted 
-        loop 
-        playsInline
-        disablePictureInPicture
-        controls={false}
-        className="background-video">
-        <source 
-          src={getStaticPath("/static/videos/construction-background.MP4")} type="video/mp4" />
-          Ваш браузер не поддерживает видео.
-      </video>
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          disablePictureInPicture
+          controls={false}
+          className="background-video">
+          <source 
+            src="/static/videos/construction-background.MP4" 
+            type="video/mp4" 
+          />
+        </video>
         
         <Container className="home-container">
           <Row>

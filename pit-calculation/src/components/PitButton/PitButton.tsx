@@ -1,17 +1,31 @@
 import { FC } from 'react'
-import { getStaticPath } from '../../utils/paths'
+import { getStaticImagePath } from '../../utils/imageUtils'
 import './PitButton.css'
 
-interface Props {
-    pitCount: number
-    hasActivePit: boolean
-    pitId?: number
-}
-
-const PitButton: FC<Props> = ({ pitCount }) => {
-    const handlePitClick = (e: React.MouseEvent) => {
+const PitButton: FC = () => {
+    const handlePitClick = async (e: React.MouseEvent) => {
         e.preventDefault()
-        return -1
+        
+        try {
+            const response = await fetch('/api/pits/draft', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                return data.pit_id;
+            } else {
+                console.error('Error fetching draft pit:', data);
+                return -1;
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            return -1;
+        }
     }
 
     return (
@@ -20,8 +34,8 @@ const PitButton: FC<Props> = ({ pitCount }) => {
                 className="pit-button" 
                 onClick={handlePitClick}
             >
-                <img src={getStaticPath('static/img/basket_icon.png')} alt="Котлован" className="pit-icon" />
-                <span className="pit-count">{pitCount}</span>
+                <img src={getStaticImagePath('basket_icon.png')} alt="Котлован" className="pit-icon" />
+                <span className="pit-count">0</span>
             </button>
         </div>
     )

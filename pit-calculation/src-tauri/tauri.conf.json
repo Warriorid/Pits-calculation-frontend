@@ -20,7 +20,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' http://192.168.1.70:8080 http://192.168.1.70:9000; img-src 'self' data: http://192.168.1.70:9000"
+      "csp": "default-src 'self' http://172.20.10.2:8080 http://172.20.10.2:9000; img-src 'self' data: http://192.168.1.70:9000"
     }
   },
   "bundle": {

@@ -1,33 +1,37 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { VitePWA } from 'vite-plugin-pwa'
-
-const isTauri = !!process.env.TAURI_ENV
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  plugins: [
-    react(),
-    VitePWA({
-      // Отключаем PWA в Tauri режиме
-      registerType: isTauri ? undefined : 'autoUpdate'
-    })
-  ],
-  base: isTauri ? './' : '/Pits-calculation-frontend/',
+  plugins: [react()],
+  
+  base: '/',
+  publicDir: 'public',
+  root: '.',
+  
   server: {
     port: 3000,
-    host: '0.0.0.0',
-    proxy: !isTauri ? {
+    host: true,
+    cors: true,
+    proxy: {
       '/api': {
-        target: 'http://192.168.1.70:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api'),
+        secure: false,
       }
-    } : undefined
+    }
   },
+
   build: {
     assetsDir: 'assets',
-    outDir: 'dist'
+    outDir: 'dist',
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name]-[hash][extname]'
+      }
+    }
   },
-  publicDir: 'public',
-  root: '.'
-})
+
+  optimizeDeps: {
+    include: ['react', 'react-dom']
+  }
+});
