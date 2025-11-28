@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "pits-calculation",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.pits.calculation.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3000",
@@ -13,14 +13,14 @@
     "windows": [
       {
         "title": "pits-calculation",
-        "width": 800,
-        "height": 600,
+        "width": 1200,
+        "height": 800,
         "resizable": true,
         "fullscreen": false
       }
     ],
     "security": {
-      "csp": "default-src 'self' http://172.20.10.2:8080 http://172.20.10.2:9000; img-src 'self' data: http://192.168.1.70:9000"
+      "csp": "default-src 'self' http://172.20.10.2:8080 http://localhost:8080 https:; img-src 'self' data: http://172.20.10.2:9000 http://localhost:9000 https:; connect-src 'self' http://172.20.10.2:8080 http://localhost:8080 ws://localhost:3000 https:"
     }
   },
   "bundle": {
