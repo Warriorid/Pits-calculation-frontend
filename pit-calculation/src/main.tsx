@@ -1,4 +1,3 @@
-// main.tsx - ИСПРАВЛЕННАЯ ВЕРСИЯ
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { HashRouter, Routes, Route } from 'react-router-dom'
@@ -11,7 +10,7 @@ import LoginPage from './pages/LoginPage/LoginPage'
 import PitsPage from './pages/PitsPage/PitsPage'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-function App() {
+function AppWrapper() {
   return (
     <Provider store={store}>
       <HashRouter>
@@ -20,8 +19,8 @@ function App() {
           <Route path="/materials" element={<MaterialsPage />} />
           <Route path="/materials/:id" element={<MaterialDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/pits" element={<PitsPage />} /> {/* Используйте PitsPage */}
-          <Route path="/pits/:pit_id" element={<PitsPage />} /> {/* Используйте тот же компонент */}
+          <Route path="/pits" element={<PitsPage />} />
+          <Route path="/pits/:pit_id" element={<PitsPage />} />
           <Route path="*" element={<div>Страница не найдена</div>} />
         </Routes>
       </HashRouter>
@@ -31,6 +30,6 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <AppWrapper />
   </React.StrictMode>,
 )

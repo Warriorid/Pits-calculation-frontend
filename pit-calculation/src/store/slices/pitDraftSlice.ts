@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { Api } from '../../api/Api';
 
+// Определите интерфейс для ответа от draftList
+interface DraftListResponse {
+    pits_count?: number;
+    pit_id?: number;
+}
+
 const createApiWithToken = () => {
     return new Api({
       securityWorker: () => {
@@ -18,6 +24,7 @@ const createApiWithToken = () => {
   };
   
 const api = createApiWithToken();
+
 interface MaterialInPit {
     material?: {
         id?: number;
@@ -40,7 +47,7 @@ interface PitData {
 
 interface PitDraftState {
     pit_id?: number;
-    count: number | undefined;
+    count: number;
     materials: MaterialInPit[];
     pitData: PitData;
     error: string | null;
@@ -48,7 +55,7 @@ interface PitDraftState {
 
 const initialState: PitDraftState = {
     pit_id: NaN,
-    count: NaN,
+    count: 0,
     materials: [],
     pitData: {
         pit_length: null,
@@ -69,21 +76,43 @@ export const getPitApplication = createAsyncThunk(
 
 export const addMaterialToPit = createAsyncThunk(
     'pitDraft/addMaterialToPit',
-    async (materialId: number, { rejectWithValue }) => {
+    async (materialId: number, { rejectWithValue, dispatch }) => {
         try {
             const response = await api.materials.postMaterials(materialId);
+            
+            dispatch(fetchDraftCount());
+            
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Ошибка при добавлении материала');
         }
     }
 );
+
+export const fetchDraftCount = createAsyncThunk<DraftListResponse | number>(
+    'pitDraft/fetchDraftCount',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.pits.draftList();
+            return response.data as DraftListResponse | number;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Ошибка при загрузке корзины');
+        }
+    }
+);
+
 const pitDraftSlice = createSlice({
     name: 'pitDraft',
     initialState,
     reducers: {
         clearError: (state) => {
             state.error = null;
+        },
+        incrementCount: (state) => {
+            state.count += 1;
+        },
+        setCount: (state, action) => {
+            state.count = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -110,19 +139,32 @@ const pitDraftSlice = createSlice({
                         count: 1,
                         slope_angle: material.slope_angle
                     })) || [];
+                    state.count = materials.length;
                 }
             })
             .addCase(getPitApplication.rejected, (state) => {
                 state.error = 'Ошибка при загрузке данных заявки';
             })
             .addCase(addMaterialToPit.fulfilled, (state) => {
-                state.count = state.materials.length + 1;
+                state.count += 1;
+                state.error = null;
             })
             .addCase(addMaterialToPit.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
+            .addCase(fetchDraftCount.fulfilled, (state, action) => {
+                const data = action.payload;
+                if (typeof data === 'number') {
+                    state.count = data === -1 ? 0 : data;
+                } else if (data && 'pits_count' in data && typeof data.pits_count === 'number') {
+                    state.count = data.pits_count;
+                }
+            })
+            .addCase(fetchDraftCount.rejected, (state, action) => {
                 state.error = action.payload as string;
             });
     }
 });
 
-export const { clearError } = pitDraftSlice.actions;
+export const { clearError, incrementCount, setCount } = pitDraftSlice.actions;
 export default pitDraftSlice.reducer;

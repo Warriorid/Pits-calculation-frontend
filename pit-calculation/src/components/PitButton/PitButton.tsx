@@ -1,9 +1,9 @@
-// components/PitButton/PitButton.tsx
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { useSelector, useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
 import { getStaticImagePath } from '../../utils/imageUtils';
+import { fetchDraftCount } from '../../store/slices/pitDraftSlice'; 
 import './PitButton.css';
 
 interface DraftPitResponse {
@@ -13,16 +13,16 @@ interface DraftPitResponse {
 
 const PitButton: FC = () => {
     const [pitId, setPitId] = useState<number | null>(null);
-    const [count, setCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>(); // Укажите тип AppDispatch
     
     const { isAuthenticated } = useSelector((state: RootState) => state.user);
+    const { count } = useSelector((state: RootState) => state.pitDraft);
 
-    const fetchDraftCount = async () => {
+    const fetchDraftData = async () => {
         if (!isAuthenticated) {
-            setCount(0);
             setPitId(null);
             return;
         }
@@ -55,24 +55,19 @@ const PitButton: FC = () => {
                 const data: DraftPitResponse | number = await response.json();
                 
                 if (typeof data === 'number') {
-                    setCount(data === -1 ? 0 : data);
                     setPitId(null);
                 } else if (data && typeof data.pit_id === 'number') {
-                    setCount(data.pits_count || 0);
                     setPitId(data.pit_id);
                 } else {
-                    setCount(0);
                     setPitId(null);
                 }
             } else {
                 setError('Ошибка загрузки');
-                setCount(0);
                 setPitId(null);
             }
         } catch (error) {
             console.error('Network error fetching draft pit:', error);
             setError('Ошибка сети');
-            setCount(0);
             setPitId(null);
         } finally {
             setLoading(false);
@@ -91,11 +86,19 @@ const PitButton: FC = () => {
     };
 
     useEffect(() => {
-        fetchDraftCount();
+        if (isAuthenticated) {
+            dispatch(fetchDraftCount());
+            fetchDraftData();
+        }
         
-        const interval = setInterval(fetchDraftCount, 30000);
+        const interval = setInterval(() => {
+            if (isAuthenticated) {
+                dispatch(fetchDraftCount());
+            }
+        }, 30000);
+        
         return () => clearInterval(interval);
-    }, [isAuthenticated]);
+    }, [isAuthenticated, dispatch]);
 
     return (
         <div className="pit-button-container">

@@ -70,6 +70,11 @@ const Header: FC = () => {
                     <Link to={ROUTES.MATERIALS} className="menu-item">
                         Материалы
                     </Link>
+                    {/* {isAuthenticated && (
+                        <Link to={ROUTES.PITS} className="menu-item">
+                            Котлованы
+                        </Link>
+                    )} */}
                 </div>
             </nav>
         </header>

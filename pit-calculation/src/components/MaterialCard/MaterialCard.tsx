@@ -3,9 +3,9 @@ import { useLocation } from 'react-router-dom';
 import { Row, Col, Button } from 'react-bootstrap'; 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { addMaterialToPit } from '../../store/slices/pitDraftSlice';
 import { getStaticImagePath } from '../../utils/imageUtils';
 import './MaterialCard.css';
+import { addMaterialToPit, fetchDraftCount } from '../../store/slices/pitDraftSlice'; // Убрали checkMaterialInPit
 
 interface Props {
     id: number;
@@ -30,13 +30,14 @@ const MaterialCard: FC<Props> = ({
     const location = useLocation();
     const dispatch = useDispatch<AppDispatch>();
     const { isAuthenticated } = useSelector((state: RootState) => state.user);
-    const [, setLoading] = useState(false);
-    const [, setAddError] = useState<string | null>(null);
-    const [, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false); // Изменили на обычное состояние
+    const [, setAddError] = useState<string | null>(null); // Изменили на обычное состояние
+    const [, setSuccess] = useState(false); // Изменили на обычное состояние
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         e.currentTarget.src = getStaticImagePath('defaultImage.png');
     };
+    
     const handleAddToPit = async (e: React.MouseEvent) => {
         e.stopPropagation();
         if (isAuthenticated) {
@@ -44,7 +45,12 @@ const MaterialCard: FC<Props> = ({
                 setLoading(true);
                 setAddError(null);
                 setSuccess(false);
+                
+                // Просто добавляем материал, сервер сам проверит дубликаты
                 await dispatch(addMaterialToPit(id)).unwrap();
+                
+                // Обновляем счетчик после успешного добавления
+                await dispatch(fetchDraftCount());
                 
                 setSuccess(true);
                 setTimeout(() => setSuccess(false), 3000);
@@ -114,15 +120,17 @@ const MaterialCard: FC<Props> = ({
                 <p className="material-coefficient">
                     Коэффициент разрыхления: <span>{coefficient}</span>
                 </p>
-            
+                
+
                 
                 <div className="material-actions">
                     {showAddButton && isAuthenticated && (
                         <button 
-                            className={`material-add`}
+                            className={`material-add ${loading ? 'disabled' : ''}`}
                             onClick={handleAddToPit}
+                            disabled={loading}
                         >
-                            Добавить
+                            {loading ? 'Добавление...' : 'Добавить'}
                         </button>
                     )}
                     <button 

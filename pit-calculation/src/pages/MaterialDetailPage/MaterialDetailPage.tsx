@@ -3,9 +3,9 @@ import { useParams, Link } from 'react-router-dom'
 import { Spinner } from 'react-bootstrap'
 import { Material, getMaterialById } from '../../modules/materialsApi'
 import Header from '../../components/Header/Header'
-import { BreadCrumbs } from '../../components/BreadCrumbs/BreadCrumbs'
-import { getStaticImagePath } from '../../utils/imageUtils'  // ← ИСПРАВЛЕНО импорт
-import { ROUTES, ROUTE_LABELS } from '../../Routers'
+// import { BreadCrumbs } from '../../components/BreadCrumbs/BreadCrumbs'
+import { getStaticImagePath } from '../../utils/imageUtils' 
+// import { ROUTES, ROUTE_LABELS } from '../../Routers'
 import './MaterialDetailPage.css'
 
 const MaterialDetailPage: FC = () => {
@@ -14,7 +14,7 @@ const MaterialDetailPage: FC = () => {
     const [loading, setLoading] = useState(true)
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        e.currentTarget.src = getStaticImagePath('defaultImage.png')  // ← ИСПРАВЛЕНО
+        e.currentTarget.src = getStaticImagePath('defaultImage.png') 
     }
 
     useEffect(() => {
@@ -35,10 +35,10 @@ const MaterialDetailPage: FC = () => {
         loadMaterial()
     }, [id])
 
-    const breadCrumbs = [
-        { label: ROUTE_LABELS.MATERIALS, path: ROUTES.MATERIALS },
-        { label: material?.title || 'Загрузка...' }
-    ]
+    // const breadCrumbs = [
+    //     { label: ROUTE_LABELS.MATERIALS, path: ROUTES.MATERIALS },
+    //     { label: material?.title || 'Загрузка...' }
+    // ]
 
     if (loading) {
         return (
@@ -69,7 +69,7 @@ const MaterialDetailPage: FC = () => {
         <>
             <Header />
             <main className="main-content">
-                <BreadCrumbs crumbs={breadCrumbs} />
+                {/* <BreadCrumbs crumbs={breadCrumbs} /> */}
                 
                 <div className="material-button-container">
                     <Link to="/materials" className="material-back">
