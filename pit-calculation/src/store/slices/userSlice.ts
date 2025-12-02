@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Api } from '../../api/Api';
+import { Api } from '../../api/Api'
 import { loadUserSession, saveUserSession, clearUserSession } from '../../utils/authUtils';
 
 const createApiWithToken = () => {
@@ -70,12 +70,14 @@ export const registerUserAsync = createAsyncThunk(
 
 export const logoutUserAsync = createAsyncThunk(
   'user/logoutUserAsync',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue, getState }) => { // Добавили dispatch
     try {
       const state = getState() as { user: UserState };
       if (state.user.token) {
         await api.users.logoutCreate();
       }
+      // Очищаем корзину при выходе
+      // dispatch(clearPitDraft()); // Так не работает, нужно через extraReducers
       return null;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Ошибка при выходе из системы'); 
@@ -98,6 +100,11 @@ const userSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    // Новый reducer для принудительной очистки
+    forceLogout: (state) => {
+      Object.assign(state, initialState);
+      clearUserSession();
     }
   },
   extraReducers: (builder) => {
@@ -138,31 +145,16 @@ const userSlice = createSlice({
       })
   
       .addCase(logoutUserAsync.fulfilled, (state) => {
-        Object.assign(state, {
-          username: null,
-          isAuthenticated: false,
-          role: 2,
-          token: undefined,
-          userId: undefined,
-          error: null
-        });
-        
+        Object.assign(state, initialState);
         clearUserSession();
       })
       .addCase(logoutUserAsync.rejected, (state, action) => {
         state.error = action.payload as string;
-        Object.assign(state, {
-          username: null,
-          isAuthenticated: false,
-          role: 2,
-          token: undefined,
-          userId: undefined
-        });
-        
+        Object.assign(state, initialState);
         clearUserSession();
       });
   },
 });
 
-export const { restoreSession, clearError } = userSlice.actions;
+export const { restoreSession, clearError, forceLogout } = userSlice.actions;
 export default userSlice.reducer;

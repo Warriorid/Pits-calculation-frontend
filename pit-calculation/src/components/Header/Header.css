@@ -47,7 +47,7 @@
     justify-content: center;
     font-weight: bold;
     color: #000;
-    font-size: 16px; /* Убедитесь, что шрифт читаемый */
+    font-size: 16px; 
 }
 
 .username {
@@ -65,7 +65,7 @@
     border-top: 1px solid #dee2e6;
     padding: 10px 0;
     position: fixed;
-    top: 66px; /* Высота header (8px padding * 2 + 50px logo) */
+    top: 66px; 
     left: 0;
     right: 0;
     z-index: 999;
@@ -101,7 +101,7 @@
     color: white;
 }
 
-/* Адаптивность */
+
 @media (max-width: 768px) {
     .menu-container {
         gap: 15px;

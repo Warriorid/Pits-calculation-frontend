@@ -19,66 +19,6 @@
     text-align: center;
 }
 
-.pits-info {
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    padding: 30px;
-    margin-bottom: 30px;
-    border: 1px solid #dee2e6;
-}
-
-.quick-actions {
-    margin-top: 30px;
-}
-
-.quick-actions h3 {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 600;
-    font-size: 20px;
-    margin-bottom: 15px;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.action-button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.action-button.primary {
-    background: #FFCD11;
-    color: #000;
-}
-
-.action-button.primary:hover {
-    background: #E6B910;
-}
-
-.action-button.secondary {
-    background: #6c757d;
-    color: white;
-    border: 1px solid #6c757d;
-}
-
-.action-button.secondary:hover {
-    background: #5a6268;
-}
-
-.error-alert {
-    margin-bottom: 20px;
-    border-radius: 8px;
-}
-
 .loading-container {
     text-align: center;
     padding: 50px 20px;
@@ -104,7 +44,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
 .parameter-input {
@@ -137,65 +77,26 @@
     cursor: not-allowed;
 }
 
-/* Статус и счетчик */
-.status-badge {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 30px;
-    padding: 15px;
-    background: white;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    flex-wrap: wrap;
-}
 
-.status-badge strong {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.status {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-}
-
-.status.draft {
-    background: #6c757d;
-    color: white;
-}
-
-.status.formed {
-    background: #007bff;
-    color: white;
-}
-
-.status.completed {
-    background: #28a745;
-    color: white;
-}
-
-.materials-count {
-    margin-left: auto;
-    padding: 6px 12px;
-    background: #FFCD11;
-    border-radius: 20px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-}
-
-/* Заголовок материалов */
-.materials-title {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    margin-bottom: 20px;
+.save-params-container {
+    margin: 30px 0; 
     text-align: center;
+}
+
+.save-params-button {
+    padding: 12px 24px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+}
+
+.save-params-button:hover {
+    background-color: #1976D2;
 }
 
 /* Карточки материалов */
@@ -316,6 +217,21 @@
 .slope-input:read-only {
     background-color: #f8f9fa;
     cursor: not-allowed;
+}
+
+.save-slope-button {
+    padding: 5px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.save-slope-button:hover {
+    background-color: #45a049;
 }
 
 .volume-result {
@@ -464,14 +380,8 @@
         width: 100%;
     }
     
-    .status-badge {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .materials-count {
-        margin-left: 0;
+    .save-params-container {
+        margin: 20px 0; /* Уменьшаем отступ на мобильных устройствах */
     }
 }
 
@@ -490,11 +400,96 @@
         margin-bottom: 20px;
     }
     
-    .action-buttons {
-        flex-direction: column;
+    .save-params-container {
+        margin: 15px 0; 
     }
-    
-    .action-button {
-        width: 100%;
-    }
+}
+
+.delete-material-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    transition: background-color 0.3s;
+}
+
+.delete-material-button:hover:not(:disabled) {
+    background-color: #c82333;
+}
+
+.delete-material-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.coefficient-header {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Стили для кнопки удаления заявки */
+.delete-cart-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.delete-cart-button:hover {
+    background-color: #c82333;
+}
+/* Добавьте в PitsPage.css */
+.pit-material-card {
+    position: relative;
+    /* остальные стили остаются */
+}
+
+.delete-material-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+    z-index: 1;
+}
+
+.delete-material-button:hover:not(:disabled) {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+.delete-material-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

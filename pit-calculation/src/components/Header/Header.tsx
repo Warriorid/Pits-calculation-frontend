@@ -1,4 +1,3 @@
-// components/Header/Header.tsx
 import { FC } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from 'react-bootstrap'
@@ -7,17 +6,16 @@ import { logoutUserAsync } from '../../store/slices/userSlice'
 import { getStaticImagePath } from '../../utils/imageUtils'
 import { ROUTES } from '../../Routers'
 import './Header.css'
+import { clearPitDraft } from '../../store/slices/pitDraftSlice';
 
 const Header: FC = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const { isAuthenticated, username } = useAppSelector((state) => state.user)
 
-    console.log('isAuthenticated:', isAuthenticated)
-    console.log('username:', username)
-
     const handleLogout = async () => {
         await dispatch(logoutUserAsync())
+        dispatch(clearPitDraft());
         navigate(ROUTES.HOME)
     }
 

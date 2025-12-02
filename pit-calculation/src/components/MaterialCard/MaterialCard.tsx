@@ -30,9 +30,9 @@ const MaterialCard: FC<Props> = ({
     const location = useLocation();
     const dispatch = useDispatch<AppDispatch>();
     const { isAuthenticated } = useSelector((state: RootState) => state.user);
-    const [loading, setLoading] = useState(false); // Изменили на обычное состояние
-    const [, setAddError] = useState<string | null>(null); // Изменили на обычное состояние
-    const [, setSuccess] = useState(false); // Изменили на обычное состояние
+    const [loading, setLoading] = useState(false); 
+    const [, setAddError] = useState<string | null>(null); 
+    const [, setSuccess] = useState(false);
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         e.currentTarget.src = getStaticImagePath('defaultImage.png');
@@ -46,10 +46,7 @@ const MaterialCard: FC<Props> = ({
                 setAddError(null);
                 setSuccess(false);
                 
-                // Просто добавляем материал, сервер сам проверит дубликаты
                 await dispatch(addMaterialToPit(id)).unwrap();
-                
-                // Обновляем счетчик после успешного добавления
                 await dispatch(fetchDraftCount());
                 
                 setSuccess(true);

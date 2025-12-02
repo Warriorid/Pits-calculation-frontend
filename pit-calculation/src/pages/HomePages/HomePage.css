@@ -1,4 +1,3 @@
-/* HomePage.css */
 .home-container {
   padding: 20px;
   min-height: calc(100vh - 126px);
@@ -67,7 +66,6 @@
   z-index: 3;
 }
 
-/* Убираем все элементы управления видео */
 .background-video::-webkit-media-controls {
   display: none !important;
 }
@@ -98,12 +96,10 @@
   pointer-events: none !important;
 }
 
-/* Для Яндекс Браузера и других */
 .background-video::-internal-media-controls-overlay-cast-button {
   display: none !important;
 }
 
-/* Запрещаем контекстное меню */
 .background-video {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -114,17 +110,14 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Скрываем кнопку PIP */
 .background-video::-webkit-media-controls-picture-in-picture-button {
   display: none !important;
 }
 
-/* Скрываем кнопку загрузки */
 .background-video::-webkit-media-controls-download-button {
   display: none !important;
 }
 
-/* Отключаем все взаимодействия */
 .video-wrapper {
   pointer-events: none;
 }
@@ -133,24 +126,20 @@
   pointer-events: none;
 }
 
-/* Блокируем контекстное меню */
 .video-wrapper {
   -webkit-context-menu: none;
 }
 
-/* Для Firefox */
 .background-video {
   -moz-controls: none;
 }
 
-/* Для IE/Edge */
 @supports (-ms-ime-align: auto) {
   .background-video {
     -ms-controls: none;
   }
 }
 
-/* Убираем белую линию внизу */
 body {
   margin: 0;
   padding: 0;
@@ -165,13 +154,11 @@ html, body {
   height: 100%;
 }
 
-/* Убираем старый navbar стиль */
 .home-navbar,
 .nav-link-custom {
   display: none;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .home-container {
       margin-top: 116px;
@@ -202,7 +189,6 @@ html, body {
   }
 }
 
-/* Дополнительная защита от появления контролов */
 .video-background {
   -webkit-user-drag: none;
   -khtml-user-drag: none;
@@ -215,7 +201,6 @@ html, body {
   outline: none;
 }
 
-/* Скрываем все возможные индикаторы */
 .background-video::-webkit-media-text-track-container,
 .background-video::-webkit-media-text-track-display,
 .background-video::-webkit-media-text-track-region,

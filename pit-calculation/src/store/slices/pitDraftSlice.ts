@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Api } from '../../api/Api';
+import { Api } from '../../api/Api'
+import { ModelUpdatePitParam } from '../../api/Api';
 
-// Определите интерфейс для ответа от draftList
 interface DraftListResponse {
     pits_count?: number;
     pit_id?: number;
@@ -51,6 +51,7 @@ interface PitDraftState {
     materials: MaterialInPit[];
     pitData: PitData;
     error: string | null;
+    deletingMaterialId: number | null; // Добавляем для отслеживания удаления
 }
 
 const initialState: PitDraftState = {
@@ -64,6 +65,12 @@ const initialState: PitDraftState = {
         status: null
     },
     error: null,
+    deletingMaterialId: null, // Инициализируем
+};
+
+// Вспомогательная функция для получения ID материала
+const getMaterialId = (material: MaterialInPit): number | undefined => {
+    return material.material?.id;
 };
 
 export const getPitApplication = createAsyncThunk(
@@ -101,6 +108,62 @@ export const fetchDraftCount = createAsyncThunk<DraftListResponse | number>(
     }
 );
 
+export const updatePitParams = createAsyncThunk(
+    'pitDraft/updatePitParams',
+    async (
+        { pitId, params }: { pitId: number; params: ModelUpdatePitParam },
+        { rejectWithValue, }
+    ) => {
+        try {
+            await api.pits.pitsUpdate(pitId, params);
+            
+            return params;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Ошибка при обновлении параметров котлована');
+        }
+    }
+);
+
+export const updateMaterialSlopeAngle = createAsyncThunk(
+    'pitDraft/updateMaterialSlopeAngle',
+    async (
+        { calculationId, materialId, slopeAngle }: { calculationId: number; materialId: number; slopeAngle: number },
+        { rejectWithValue }
+    ) => {
+        try {
+            await api.calculationMaterials.calculationMaterialsUpdate(
+                calculationId,
+                materialId,
+                { slope_angle: slopeAngle }
+            );
+            
+            return { materialId, slopeAngle };
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Ошибка при обновлении угла откоса');
+        }
+    }
+);
+
+// Новый thunk для удаления материала из заявки
+export const deleteMaterialFromPit = createAsyncThunk(
+    'pitDraft/deleteMaterialFromPit',
+    async (
+        { calculationId, materialId }: { calculationId: number; materialId: number },
+        { rejectWithValue, dispatch }
+    ) => {
+        try {
+            await api.calculationMaterials.calculationMaterialsDelete(calculationId, materialId);
+            
+            // Обновляем счетчик черновика
+            dispatch(fetchDraftCount());
+            
+            return materialId;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Ошибка при удалении материала из заявки');
+        }
+    }
+);
+
 const pitDraftSlice = createSlice({
     name: 'pitDraft',
     initialState,
@@ -113,6 +176,24 @@ const pitDraftSlice = createSlice({
         },
         setCount: (state, action) => {
             state.count = action.payload;
+        },
+        // Новый reducer для очистки состояния
+        clearPitDraft: (state) => {
+            state.pit_id = NaN;
+            state.count = 0;
+            state.materials = [];
+            state.pitData = {
+                pit_length: null,
+                pit_width: null,
+                pit_depth: null,
+                status: null
+            };
+            state.error = null;
+            state.deletingMaterialId = null;
+        },
+        // Редуктор для отслеживания удаления материала
+        setDeletingMaterialId: (state, action) => {
+            state.deletingMaterialId = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -141,9 +222,12 @@ const pitDraftSlice = createSlice({
                     })) || [];
                     state.count = materials.length;
                 }
+                state.deletingMaterialId = null;
+                state.error = null;
             })
             .addCase(getPitApplication.rejected, (state) => {
                 state.error = 'Ошибка при загрузке данных заявки';
+                state.deletingMaterialId = null;
             })
             .addCase(addMaterialToPit.fulfilled, (state) => {
                 state.count += 1;
@@ -162,9 +246,60 @@ const pitDraftSlice = createSlice({
             })
             .addCase(fetchDraftCount.rejected, (state, action) => {
                 state.error = action.payload as string;
+            })
+            .addCase(updatePitParams.fulfilled, (state, action) => {
+                const { pit_depth, pit_length, pit_width } = action.payload;
+                if (state.pitData) {
+                    if (pit_depth !== undefined) state.pitData.pit_depth = pit_depth;
+                    if (pit_length !== undefined) state.pitData.pit_length = pit_length;
+                    if (pit_width !== undefined) state.pitData.pit_width = pit_width;
+                }
+                state.error = null;
+            })
+            .addCase(updatePitParams.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
+            .addCase(updateMaterialSlopeAngle.fulfilled, (state, action) => {
+                const { materialId, slopeAngle } = action.payload;
+                // Обновляем угол откоса в материалах
+                state.materials = state.materials.map(material => {
+                    const currentMaterialId = getMaterialId(material);
+                    if (currentMaterialId === materialId) {
+                        return {
+                            ...material,
+                            slope_angle: slopeAngle
+                        };
+                    }
+                    return material;
+                });
+                state.error = null;
+            })
+            .addCase(updateMaterialSlopeAngle.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
+            .addCase(deleteMaterialFromPit.pending, (state, action) => {
+                const { materialId } = action.meta.arg;
+                state.deletingMaterialId = materialId;
+                state.error = null;
+            })
+            .addCase(deleteMaterialFromPit.fulfilled, (state, action) => {
+                const deletedMaterialId = action.payload;
+                // Удаляем материал из локального состояния
+                state.materials = state.materials.filter(material => {
+                    const currentMaterialId = getMaterialId(material);
+                    return currentMaterialId !== deletedMaterialId;
+                });
+                // Обновляем счетчик
+                state.count = Math.max(0, state.count - 1);
+                state.deletingMaterialId = null;
+                state.error = null;
+            })
+            .addCase(deleteMaterialFromPit.rejected, (state, action) => {
+                state.error = action.payload as string;
+                state.deletingMaterialId = null;
             });
     }
 });
 
-export const { clearError, incrementCount, setCount } = pitDraftSlice.actions;
+export const { clearError, incrementCount, setCount, clearPitDraft, setDeletingMaterialId } = pitDraftSlice.actions;
 export default pitDraftSlice.reducer;

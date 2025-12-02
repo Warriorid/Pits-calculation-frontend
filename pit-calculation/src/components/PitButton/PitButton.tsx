@@ -16,7 +16,7 @@ const PitButton: FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
-    const dispatch = useDispatch<AppDispatch>(); // Укажите тип AppDispatch
+    const dispatch = useDispatch<AppDispatch>(); 
     
     const { isAuthenticated } = useSelector((state: RootState) => state.user);
     const { count } = useSelector((state: RootState) => state.pitDraft);
@@ -52,14 +52,11 @@ const PitButton: FC = () => {
             });
             
             if (response.ok) {
-                const data: DraftPitResponse | number = await response.json();
-                
-                if (typeof data === 'number') {
-                    setPitId(null);
-                } else if (data && typeof data.pit_id === 'number') {
+                const data: DraftPitResponse = await response.json();
+                if (data.pit_id && data.pit_id > 0) {
                     setPitId(data.pit_id);
                 } else {
-                    setPitId(null);
+                    setPitId(null); 
                 }
             } else {
                 setError('Ошибка загрузки');
@@ -77,10 +74,13 @@ const PitButton: FC = () => {
     const handlePitClick = (e: React.MouseEvent) => {
         e.preventDefault();
         if (pitId && isAuthenticated) {
+            // Есть черновик - переходим к редактированию
             navigate(`/pits/${pitId}`);
         } else if (isAuthenticated) {
+            // Нет черновика - показываем пустую страницу или создаем новый
             navigate('/pits');
         } else {
+            // Не авторизован - на страницу входа
             navigate('/login');
         }
     };
@@ -100,19 +100,35 @@ const PitButton: FC = () => {
         return () => clearInterval(interval);
     }, [isAuthenticated, dispatch]);
 
+    // Определяем, есть ли черновик
+    const hasDraft = pitId !== null && pitId > 0;
+    
+    // Определяем title в зависимости от состояния
+    let titleText = "Заявка";
+    if (error) {
+        titleText = `Ошибка: ${error}`;
+    } else if (hasDraft) {
+        titleText = count > 0 
+            ? `Материалов в заявке: ${count} (Черновик)` 
+            : "Заявка пуста (Черновик)";
+    } else {
+        titleText = "Нет активной заявки";
+    }
+
     return (
         <div className="pit-button-container">
             <button 
-                className="pit-button" 
+                className={`pit-button ${!hasDraft ? 'no-draft' : ''}`}
                 onClick={handlePitClick}
-                title={error 
-                    ? `Ошибка: ${error}` 
-                    : count > 0 
-                        ? `Материалов в заявке: ${count}` 
-                        : "Заявка пуста"}
-                disabled={!isAuthenticated}
+                title={titleText}
+                disabled={!isAuthenticated || (!hasDraft && count === 0)}
             >
-                <img src={getStaticImagePath('basket_icon.png')} alt="Заявка" className="pit-icon" />
+                <img 
+                    src={getStaticImagePath('basket_icon.png')} 
+                    alt="Заявка" 
+                    className="pit-icon" 
+                    style={!hasDraft ? { opacity: 0.5 } : {}}
+                />
                 <span className="pit-count" style={error ? {color: 'red'} : {}}>
                     {loading ? '...' : error ? '!' : count}
                 </span>

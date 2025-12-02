@@ -1,6 +1,5 @@
-// pages/LoginPage/LoginPage.tsx
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { Form, Button, Container, Card, Tabs, Tab, Alert, Spinner } from 'react-bootstrap';
+import { Form, Button, Container, Card, Alert, Spinner } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { loginUserAsync, registerUserAsync } from '../../store/slices/userSlice';
 import { useNavigate } from "react-router-dom";
@@ -16,7 +15,7 @@ const LoginPage: React.FC = () => {
     const [loginData, setLoginData] = useState({ username: '', password: '' });
     const [registerData, setRegisterData] = useState({ 
         username: '', 
-        password: '' // Убрано confirmPassword
+        password: ''
     });
     
     const error = useAppSelector((state) => state.user.error);
@@ -34,7 +33,6 @@ const LoginPage: React.FC = () => {
                 errors.loginPassword = 'Введите пароль';
             }
         } else {
-            // Упрощенная валидация для регистрации
             if (!registerData.username.trim()) {
                 errors.registerUsername = 'Введите имя пользователя';
             } else if (registerData.username.length < 3) {
@@ -44,8 +42,6 @@ const LoginPage: React.FC = () => {
             if (!registerData.password) {
                 errors.registerPassword = 'Введите пароль';
             }
-            // Убрана проверка на длину пароля (6 символов)
-            // Убрана проверка confirmPassword
         }
         
         setFormErrors(errors);
@@ -113,142 +109,156 @@ const LoginPage: React.FC = () => {
             <Header />
             <Container className="login-container">
                 <Card className="login-card">
-                    <Card.Body>
-                        <Tabs
-                            activeKey={activeTab}
-                            onSelect={(k) => setActiveTab(k as 'login' | 'register')}
-                            className="mb-4"
+                    {/* Вкладки ВНЕ Card.Body, чтобы они были отдельно */}
+                    <div className="card-tabs">
+                        <button 
+                            className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('login')}
+                            type="button"
                         >
-                            <Tab eventKey="login" title="Вход">
-                                <Form onSubmit={handleLoginSubmit}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Имя пользователя</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="username"
-                                            placeholder="Введите имя пользователя"
-                                            value={loginData.username}
-                                            onChange={handleLoginChange}
-                                            isInvalid={!!formErrors.loginUsername}
-                                            disabled={localLoading}
-                                        />
-                                        <Form.Control.Feedback type="invalid">
-                                            {formErrors.loginUsername}
-                                        </Form.Control.Feedback>
-                                    </Form.Group>
-
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Пароль</Form.Label>
-                                        <Form.Control
-                                            type="password"
-                                            name="password"
-                                            placeholder="Введите пароль"
-                                            value={loginData.password}
-                                            onChange={handleLoginChange}
-                                            isInvalid={!!formErrors.loginPassword}
-                                            disabled={localLoading}
-                                        />
-                                        <Form.Control.Feedback type="invalid">
-                                            {formErrors.loginPassword}
-                                        </Form.Control.Feedback>
-                                    </Form.Group>
-
-                                    {error && activeTab === 'login' && (
-                                        <Alert variant="danger" className="mb-3">
-                                            {error}
-                                        </Alert>
-                                    )}
-
-                                    <Button 
-                                        variant="primary" 
-                                        type="submit" 
-                                        className="w-100"
+                            Вход
+                        </button>
+                        <button 
+                            className={`tab-btn ${activeTab === 'register' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('register')}
+                            type="button"
+                        >
+                            Регистрация
+                        </button>
+                    </div>
+                    
+                    <Card.Body className="card-form-body">
+                        {/* Форма входа */}
+                        {activeTab === 'login' && (
+                            <Form onSubmit={handleLoginSubmit} className="login-form">
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Имя пользователя</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="username"
+                                        placeholder="Введите имя пользователя"
+                                        value={loginData.username}
+                                        onChange={handleLoginChange}
+                                        isInvalid={!!formErrors.loginUsername}
                                         disabled={localLoading}
-                                    >
-                                        {localLoading ? (
-                                            <>
-                                                <Spinner
-                                                    as="span"
-                                                    animation="border"
-                                                    size="sm"
-                                                    role="status"
-                                                    aria-hidden="true"
-                                                    className="me-2"
-                                                />
-                                                Вход...
-                                            </>
-                                        ) : (
-                                            'Войти'
-                                        )}
-                                    </Button>
-                                </Form>
-                            </Tab>
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {formErrors.loginUsername}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
 
-                            <Tab eventKey="register" title="Регистрация">
-                                <Form onSubmit={handleRegisterSubmit}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Имя пользователя</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="username"
-                                            placeholder="Введите имя пользователя"
-                                            value={registerData.username}
-                                            onChange={handleRegisterChange}
-                                            isInvalid={!!formErrors.registerUsername}
-                                            disabled={localLoading}
-                                        />
-                                        <Form.Control.Feedback type="invalid">
-                                            {formErrors.registerUsername}
-                                        </Form.Control.Feedback>
-                                    </Form.Group>
-
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Пароль</Form.Label>
-                                        <Form.Control
-                                            type="password"
-                                            name="password"
-                                            placeholder="Введите пароль"
-                                            value={registerData.password}
-                                            onChange={handleRegisterChange}
-                                            isInvalid={!!formErrors.registerPassword}
-                                            disabled={localLoading}
-                                        />
-                                        <Form.Control.Feedback type="invalid">
-                                            {formErrors.registerPassword}
-                                        </Form.Control.Feedback>
-                                    </Form.Group>
-
-                                    {error && activeTab === 'register' && (
-                                        <Alert variant="danger" className="mb-3">
-                                            {error}
-                                        </Alert>
-                                    )}
-
-                                    <Button 
-                                        variant="success" 
-                                        type="submit" 
-                                        className="w-100"
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Пароль</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        name="password"
+                                        placeholder="Введите пароль"
+                                        value={loginData.password}
+                                        onChange={handleLoginChange}
+                                        isInvalid={!!formErrors.loginPassword}
                                         disabled={localLoading}
-                                    >
-                                        {localLoading ? (
-                                            <>
-                                                <Spinner
-                                                    as="span"
-                                                    animation="border"
-                                                    size="sm"
-                                                    role="status"
-                                                    aria-hidden="true"
-                                                    className="me-2"
-                                                />
-                                                Регистрация...
-                                            </>
-                                        ) : (
-                                            'Зарегистрироваться'
-                                        )}
-                                    </Button>
-                                </Form>
-                            </Tab>
-                        </Tabs>
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {formErrors.loginPassword}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+
+                                {error && activeTab === 'login' && (
+                                    <Alert variant="danger" className="mb-3">
+                                        {error}
+                                    </Alert>
+                                )}
+
+                                <Button 
+                                    variant="primary" 
+                                    type="submit" 
+                                    className="w-100"
+                                    disabled={localLoading}
+                                >
+                                    {localLoading ? (
+                                        <>
+                                            <Spinner
+                                                as="span"
+                                                animation="border"
+                                                size="sm"
+                                                role="status"
+                                                aria-hidden="true"
+                                                className="me-2"
+                                            />
+                                            Вход...
+                                        </>
+                                    ) : (
+                                        'Войти'
+                                    )}
+                                </Button>
+                            </Form>
+                        )}
+
+                        {/* Форма регистрации */}
+                        {activeTab === 'register' && (
+                            <Form onSubmit={handleRegisterSubmit} className="register-form">
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Имя пользователя</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="username"
+                                        placeholder="Введите имя пользователя"
+                                        value={registerData.username}
+                                        onChange={handleRegisterChange}
+                                        isInvalid={!!formErrors.registerUsername}
+                                        disabled={localLoading}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {formErrors.registerUsername}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Пароль</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        name="password"
+                                        placeholder="Введите пароль"
+                                        value={registerData.password}
+                                        onChange={handleRegisterChange}
+                                        isInvalid={!!formErrors.registerPassword}
+                                        disabled={localLoading}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {formErrors.registerPassword}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+
+                                {error && activeTab === 'register' && (
+                                    <Alert variant="danger" className="mb-3">
+                                        {error}
+                                    </Alert>
+                                )}
+
+                                <Button 
+                                    variant="success" 
+                                    type="submit" 
+                                    className="w-100"
+                                    disabled={localLoading}
+                                >
+                                    {localLoading ? (
+                                        <>
+                                            <Spinner
+                                                as="span"
+                                                animation="border"
+                                                size="sm"
+                                                role="status"
+                                                aria-hidden="true"
+                                                className="me-2"
+                                            />
+                                            Регистрация...
+                                        </>
+                                    ) : (
+                                        'Зарегистрироваться'
+                                    )}
+                                </Button>
+                            </Form>
+                        )}
                     </Card.Body>
                 </Card>
             </Container>
