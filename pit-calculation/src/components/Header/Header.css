@@ -3,6 +3,10 @@
     padding: 8px 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
 .header-container {
@@ -11,10 +15,109 @@
     padding: 0 20px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .logo {
     width: 50px;
     height: 50px;
     cursor: pointer;
+}
+
+/* Стили для меню аутентификации */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background-color: #FFCD11;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #000;
+    font-size: 16px; /* Убедитесь, что шрифт читаемый */
+}
+
+.username {
+    color: white;
+    font-weight: 500;
+}
+
+.login-btn, .logout-btn {
+    min-width: 80px;
+}
+
+/* Нижнее меню */
+.bottom-menu {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 10px 0;
+    position: fixed;
+    top: 66px; /* Высота header (8px padding * 2 + 50px logo) */
+    left: 0;
+    right: 0;
+    z-index: 999;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menu-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.menu-item {
+    color: #495057;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.menu-item:hover {
+    background-color: #e9ecef;
+    color: #000;
+    text-decoration: none;
+}
+
+.menu-item.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .menu-container {
+        gap: 15px;
+        padding: 0 10px;
+    }
+    
+    .menu-item {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+    
+    .header-actions {
+        gap: 10px;
+    }
+    
+    .username {
+        display: none;
+    }
 }

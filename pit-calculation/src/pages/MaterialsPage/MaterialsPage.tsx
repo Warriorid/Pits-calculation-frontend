@@ -27,16 +27,10 @@ const MaterialsPage: FC = () => {
     const [allMaterials, setAllMaterials] = useState<Material[]>([])
     const navigate = useNavigate()
 
-    const pitData = {
-        pitCount: 0,
-        hasActivePit: true,
-        pitId: 1
-    }
-
     useEffect(() => {
         const loadInitialMaterials = async () => {
             setLoading(true)
-            const materialsData = await getMaterials('')
+            const materialsData = await getMaterials()
             const filteredMaterials = materialsData.filter(material => !material.is_deleted)
             setAllMaterials(filteredMaterials)
             setLoading(false)
@@ -48,8 +42,7 @@ const MaterialsPage: FC = () => {
 
     const handleSearch = () => {
         if (searchQuery.trim() === '') {
-            // ПОЛНОСТЬЮ СБРАСЫВАЕМ ПОИСК
-            dispatch(clearSearch()) // очищаем поле поиска и результаты
+            dispatch(clearSearch())
         } else {
             const filtered = allMaterials.filter(material =>
                 material.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -77,11 +70,7 @@ const MaterialsPage: FC = () => {
                             buttonTitle="🔍"
                         />
                     </div>
-                    <PitButton 
-                        pitCount={pitData.pitCount}
-                        hasActivePit={pitData.hasActivePit}
-                        pitId={pitData.pitId}
-                    />
+                    <PitButton />
                 </div>
 
                 {loading && (

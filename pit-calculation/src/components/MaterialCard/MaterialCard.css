@@ -76,7 +76,27 @@
     justify-content: center;
     min-height: 40px;
 }
+.material-add {
+    width: 100%;
+    padding: 10px 6px; 
+    background: rgb(5, 149, 5);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font: 500 13px 'Roboto', sans-serif;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+}
 
 .material-details:hover {
     background: #E6B910;
+}
+.material-add:hover {
+    background: rgb(5, 85, 5);
 }

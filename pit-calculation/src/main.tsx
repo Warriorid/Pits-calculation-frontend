@@ -1,3 +1,4 @@
+// main.tsx - ИСПРАВЛЕННАЯ ВЕРСИЯ
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { HashRouter, Routes, Route } from 'react-router-dom'
@@ -6,8 +7,9 @@ import { store } from './store'
 import { HomePage } from './pages/HomePages/HomePage'
 import MaterialsPage from './pages/MaterialsPage/MaterialsPage'
 import MaterialDetailPage from './pages/MaterialDetailPage/MaterialDetailPage'
+import LoginPage from './pages/LoginPage/LoginPage'
+import PitsPage from './pages/PitsPage/PitsPage'
 import 'bootstrap/dist/css/bootstrap.min.css'
-
 
 function App() {
   return (
@@ -17,6 +19,9 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/materials" element={<MaterialsPage />} />
           <Route path="/materials/:id" element={<MaterialDetailPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/pits" element={<PitsPage />} /> {/* Используйте PitsPage */}
+          <Route path="/pits/:pit_id" element={<PitsPage />} /> {/* Используйте тот же компонент */}
           <Route path="*" element={<div>Страница не найдена</div>} />
         </Routes>
       </HashRouter>

@@ -1,46 +1,29 @@
 /* HomePage.css */
 .home-container {
-  padding: 60px 20px;
-  min-height: calc(100vh - 140px);
+  padding: 20px;
+  min-height: calc(100vh - 126px);
   display: flex;
   align-items: center;
   position: relative;
-  z-index: 2;
-}
-
-.home-navbar {
-  border-top: 2px solid #FFCD11;
-  border-bottom: 2px solid #e9ecef;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.nav-link-custom {
-  font: 500 16px 'Roboto', sans-serif;
-  color: #333 !important;
-  padding: 15px 25px !important;
-  transition: none !important;
-  border-radius: 0 !important;
-  margin: 0 10px;
-  background: none !important;
-  border: none !important;
-}
-
-.nav-link-custom:hover {
-  background: none !important;
-  color: #333 !important;
-  transform: none !important;
-  text-decoration: underline;
-}
-
-.navbar-nav {
-  width: 100%;
-  justify-content: flex-end;
+  z-index: 3;
+  margin-top: 126px;
 }
 
 .video-background {
   position: relative;
-  min-height: calc(100vh - 140px);
+  min-height: calc(100vh - 126px);
   overflow: hidden;
+  margin-bottom: 0;
+}
+
+.video-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
 }
 
 .background-video {
@@ -67,7 +50,7 @@
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 
-/* Затемнение видео для лучшей читаемости текста */
+/* Затемнение видео */
 .video-background::before {
   content: '';
   position: absolute;
@@ -76,35 +59,129 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.3);
-  z-index: 1;
+  z-index: 2;
 }
 
 .home-container > * {
   position: relative;
-  z-index: 2;
+  z-index: 3;
+}
+
+/* Убираем все элементы управления видео */
+.background-video::-webkit-media-controls {
+  display: none !important;
+}
+
+.background-video::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+
+.background-video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+.background-video::-webkit-media-controls-play-button,
+.background-video::-webkit-media-controls-timeline,
+.background-video::-webkit-media-controls-current-time-display,
+.background-video::-webkit-media-controls-time-remaining-display,
+.background-video::-webkit-media-controls-timeline-container,
+.background-video::-webkit-media-controls-volume-slider,
+.background-video::-webkit-media-controls-mute-button,
+.background-video::-webkit-media-controls-fullscreen-button,
+.background-video::-webkit-media-controls-toggle-closed-captions-button,
+.background-video::-webkit-media-controls-cast-button,
+.background-video::-webkit-media-controls-picture-in-picture-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Для Яндекс Браузера и других */
+.background-video::-internal-media-controls-overlay-cast-button {
+  display: none !important;
+}
+
+/* Запрещаем контекстное меню */
+.background-video {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Скрываем кнопку PIP */
+.background-video::-webkit-media-controls-picture-in-picture-button {
+  display: none !important;
+}
+
+/* Скрываем кнопку загрузки */
+.background-video::-webkit-media-controls-download-button {
+  display: none !important;
+}
+
+/* Отключаем все взаимодействия */
+.video-wrapper {
+  pointer-events: none;
+}
+
+.background-video {
+  pointer-events: none;
+}
+
+/* Блокируем контекстное меню */
+.video-wrapper {
+  -webkit-context-menu: none;
+}
+
+/* Для Firefox */
+.background-video {
+  -moz-controls: none;
+}
+
+/* Для IE/Edge */
+@supports (-ms-ime-align: auto) {
+  .background-video {
+    -ms-controls: none;
+  }
 }
 
 /* Убираем белую линию внизу */
 body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* Убираем горизонтальный скролл */
+  overflow-x: hidden;
 }
 
 #root {
   min-height: 100vh;
 }
 
-.video-background {
-  margin-bottom: 0 !important; /* Убираем отступ снизу */
-}
-
-/* Убеждаемся, что видео покрывает всю высоту */
 html, body {
   height: 100%;
 }
 
+/* Убираем старый navbar стиль */
+.home-navbar,
+.nav-link-custom {
+  display: none;
+}
+
+/* Адаптивность */
 @media (max-width: 768px) {
+  .home-container {
+      margin-top: 116px;
+      min-height: calc(100vh - 116px);
+  }
+  
+  .video-background {
+      min-height: calc(100vh - 116px);
+  }
+  
   .home-title {
       font-size: 36px;
   }
@@ -112,30 +189,36 @@ html, body {
   .home-description {
       font-size: 18px;
   }
-  
-  .nav-link-custom {
-      padding: 10px 15px !important;
-      margin: 0 5px;
-      font-size: 14px;
-  }
-  
+}
+
+@media (max-width: 480px) {
   .home-container {
-      min-height: calc(100vh - 120px);
+      margin-top: 106px;
+      min-height: calc(100vh - 106px);
   }
   
-  .navbar-nav {
-    justify-content: center;
+  .video-background {
+      min-height: calc(100vh - 106px);
   }
 }
 
-@media (max-width: 576px) {
-  .home-navbar .nav {
-      flex-direction: column;
-      gap: 10px;
-  }
-  
-  .nav-link-custom {
-      text-align: center;
-      margin: 5px 0;
-  }
+/* Дополнительная защита от появления контролов */
+.video-background {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+}
+
+/* Убираем возможность фокуса на видео */
+.background-video:focus {
+  outline: none;
+}
+
+/* Скрываем все возможные индикаторы */
+.background-video::-webkit-media-text-track-container,
+.background-video::-webkit-media-text-track-display,
+.background-video::-webkit-media-text-track-region,
+.background-video::-webkit-media-text-track-region-container {
+  display: none !important;
 }
