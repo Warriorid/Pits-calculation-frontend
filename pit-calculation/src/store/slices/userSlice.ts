@@ -1,24 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Api } from '../../api/Api'
 import { loadUserSession, saveUserSession, clearUserSession } from '../../utils/authUtils';
-
-const createApiWithToken = () => {
-  return new Api({
-    securityWorker: () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        return {
-          headers: {
-            Authorization: token,
-          },
-        };
-      }
-      return {};
-    },
-  });
-};
-
-const api = createApiWithToken();
+import { api } from '../../api/initApi';
 
 interface UserState {
     username: string | null;
@@ -42,10 +24,10 @@ export const loginUserAsync = createAsyncThunk(
   'user/loginUserAsync',
   async (credentials: { username: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await api.users.loginCreate(credentials);
+      const response = await api().users.loginCreate(credentials);
       return {
         ...response.data,
-        username: credentials.username // Добавляем username из формы
+        username: credentials.username
       }; 
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Ошибка авторизации');
@@ -57,7 +39,7 @@ export const registerUserAsync = createAsyncThunk(
   'user/registerUserAsync',
   async (userData: { username: string; password: string; role?: number }, { rejectWithValue }) => {
     try {
-      const response = await api.users.usersCreate(userData);
+      const response = await api().users.usersCreate(userData);
       return {
         ...response.data,
         username: userData.username 
@@ -70,14 +52,12 @@ export const registerUserAsync = createAsyncThunk(
 
 export const logoutUserAsync = createAsyncThunk(
   'user/logoutUserAsync',
-  async (_, { rejectWithValue, getState }) => { // Добавили dispatch
+  async (_, { rejectWithValue, getState }) => {
     try {
       const state = getState() as { user: UserState };
       if (state.user.token) {
-        await api.users.logoutCreate();
+        await api(state.user.token).users.logoutCreate();
       }
-      // Очищаем корзину при выходе
-      // dispatch(clearPitDraft()); // Так не работает, нужно через extraReducers
       return null;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Ошибка при выходе из системы'); 
@@ -101,10 +81,17 @@ const userSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    // Новый reducer для принудительной очистки
     forceLogout: (state) => {
       Object.assign(state, initialState);
       clearUserSession();
+    },
+    updateUsername: (state, action) => {
+      const newUsername = action.payload;
+      state.username = newUsername;
+      const session = loadUserSession();
+      if (session) {
+        saveUserSession(newUsername, state.role, session.token);
+      }
     }
   },
   extraReducers: (builder) => {
@@ -156,5 +143,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { restoreSession, clearError, forceLogout } = userSlice.actions;
+export const { restoreSession, clearError, forceLogout, updateUsername } = userSlice.actions;
 export default userSlice.reducer;

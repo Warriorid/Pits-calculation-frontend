@@ -2,11 +2,14 @@ import { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
+import { fetchDraftCount } from '../../store/slices/pitDraftSlice'
 import { 
     getPitApplication, 
     updatePitParams, 
     updateMaterialSlopeAngle,
-    deleteMaterialFromPit 
+    deleteMaterialFromPit,
+    deletePitDraft,
+    formPitDraft
 } from '../../store/slices/pitDraftSlice';
 import Header from '../../components/Header/Header';
 import './PitsPage.css';
@@ -18,6 +21,7 @@ const PitsPage: FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isSavingParams, setIsSavingParams] = useState(false);
     const [isSavingSlope, setIsSavingSlope] = useState<number | null>(null);
+    const [isForming, setIsForming] = useState(false); 
     
     const [pitParams, setPitParams] = useState({
         pit_length: 0,
@@ -31,18 +35,28 @@ const PitsPage: FC = () => {
         materials,
         pitData,
         error,
-        deletingMaterialId
+        deletingMaterialId,
+        deletingPit
     } = useSelector((state: RootState) => state.pitDraft);
 
     const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
-        if (pit_id && isAuthenticated) {
+        if (!isAuthenticated) {
+            return;
+        }
+        if (!pit_id) {
+            setIsLoading(false);
+            return;
+        }
+        if (!isLoading) {
             setIsLoading(true);
+            console.log('🔍 PitsPage: Загружаем данные заявки', pit_id);
             dispatch(getPitApplication(pit_id))
+                .unwrap()
                 .finally(() => setIsLoading(false));
         }
-    }, [dispatch, pit_id, isAuthenticated]);
+    }, [pit_id, isAuthenticated, dispatch]);
 
     useEffect(() => {
         if (pitData) {
@@ -148,7 +162,53 @@ const PitsPage: FC = () => {
         }
     };
 
+    const handleDeletePit = async () => {
+        if (!pit_id || !isDraft) return;
+        
+        try {
+            await dispatch(deletePitDraft(parseInt(pit_id))).unwrap();
+            await dispatch(fetchDraftCount()).unwrap();
+            navigate('/materials');
+        } catch (error: any) {
+            console.error('Ошибка удаления заявки:', error);
+        }
+    };
+
+    const handleFormPit = async () => {
+        if (!pit_id || !isDraft) return;
+        
+        try {
+            setIsForming(true);
+            await dispatch(formPitDraft(parseInt(pit_id))).unwrap();
+            await dispatch(fetchDraftCount()).unwrap();
+            navigate('/materials');
+        } catch (error: any) {
+            console.error('Ошибка формирования заявки:', error);
+            alert(error.message || 'Ошибка при отправке заявки');
+        } finally {
+            setIsForming(false);
+        }
+    };
+
     const isDraft = pitData?.status === 'draft';
+    const isFormed = pitData?.status === 'formed';
+    const isCompleted = pitData?.status === 'completed';
+    const isRejected = pitData?.status === 'rejected';
+
+    const getStatusBadge = () => {
+        switch (pitData?.status) {
+            case 'draft':
+                return <span className="badge bg-secondary">Черновик</span>;
+            case 'formed':
+                return <span className="badge bg-warning">На рассмотрении</span>;
+            case 'completed':
+                return <span className="badge bg-success">Завершена</span>;
+            case 'rejected':
+                return <span className="badge bg-danger">Отклонена</span>;
+            default:
+                return <span className="badge bg-secondary">Неизвестно</span>;
+        }
+    };
 
     const safeNumber = (value: number | null | undefined): number => {
         return value || 0;
@@ -180,7 +240,12 @@ const PitsPage: FC = () => {
             <Header />
             <main className="main-content">
                 <section className="pits-section">
-                    <h1 className="pits-title">Параметры котлована</h1>
+                    <div className="pits-header">
+                        <h1 className="pits-title">Параметры котлована</h1>
+                        <div className="pit-status">
+                            {getStatusBadge()}
+                        </div>
+                    </div>
                     
                     {error && (
                         <div className="alert alert-danger" role="alert">
@@ -348,22 +413,77 @@ const PitsPage: FC = () => {
                                                 );
                                             })}
                                         </div>
-                                        <div className="delete-cart-container">
-                                            <form className="delete-cart-form">
+                                        
+                                        {isDraft && (
+                                            <div className="pit-actions-container">
+                                                <button 
+                                                    type="button" 
+                                                    className="form-pit-button"
+                                                    onClick={handleFormPit}
+                                                    disabled={isForming}
+                                                >
+                                                    {isForming ? (
+                                                        <>
+                                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                            Отправка...
+                                                        </>
+                                                    ) : (
+                                                        'Отправить на рассмотрение'
+                                                    )}
+                                                </button>
+                                                
                                                 <button 
                                                     type="button" 
                                                     className="delete-cart-button"
-                                                    onClick={() => navigate('/materials')}
+                                                    onClick={handleDeletePit}
+                                                    disabled={deletingPit}
                                                 >
-                                                    Удалить заявку
+                                                    {deletingPit ? (
+                                                        <>
+                                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                            Удаление...
+                                                        </>
+                                                    ) : (
+                                                        'Удалить заявку'
+                                                    )}
                                                 </button>
-                                            </form>
-                                        </div>
+                                            </div>
+                                        )}
+
+                                        {(isFormed || isCompleted || isRejected) && (
+                                            <div className="pit-status-info">
+                                                <div className="status-card">
+                                                    <h4>Статус заявки: {getStatusBadge()}</h4>
+                                                    <p>
+                                                        {isFormed && 'Ваша заявка отправлена на рассмотрение модератору.'}
+                                                        {isCompleted && 'Ваша заявка была одобрена и завершена.'}
+                                                        {isRejected && 'Ваша заявка была отклонена модератором.'}
+                                                    </p>
+                                                    <p className="small-text">
+                                                        ID заявки: #{pit_id}
+                                                    </p>
+                                                    <button 
+                                                        className="back-to-list-button"
+                                                        onClick={() => navigate('/my-pits')}
+                                                    >
+                                                        Вернуться к списку заявок
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
                                     </>
                                 ) : (
                                     <section className="materials-not-found">
                                         <h3>К сожалению, материалы не добавлены :(</h3>
                                         <p>Добавьте материалы для расчета объема котлована</p>
+                                        {isDraft && (
+                                            <button 
+                                                className="browse-materials-button"
+                                                onClick={() => navigate('/materials')}
+                                            >
+                                                Перейти к материалам
+                                            </button>
+                                        )}
                                     </section>
                                 )}
                             </div>

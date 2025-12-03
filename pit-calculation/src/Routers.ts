@@ -1,4 +1,3 @@
-// Routers.ts
 export const ROUTES = {
   HOME: "/",
   MATERIALS: "/materials",
@@ -7,6 +6,7 @@ export const ROUTES = {
   PITS: "/pits",
   PIT_DETAIL: "/pits/:pit_id",
   PROFILE: "/profile",
+  USER_PITS: "/my-pits",
 }
 
 export type RouteKeyType = keyof typeof ROUTES;
@@ -16,7 +16,8 @@ export const ROUTE_LABELS: {[key in RouteKeyType]: string} = {
   MATERIALS: "Материалы",
   MATERIAL_DETAIL: "Детали материала",
   LOGIN: "Авторизация",
-  PITS: "Мои заявки",
+  PITS: "Создать заявку",
   PIT_DETAIL: "Детали заявки",
   PROFILE: "Профиль",
+  USER_PITS: "Мои заявки",
 };

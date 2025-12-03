@@ -8,6 +8,8 @@ import MaterialsPage from './pages/MaterialsPage/MaterialsPage'
 import MaterialDetailPage from './pages/MaterialDetailPage/MaterialDetailPage'
 import LoginPage from './pages/LoginPage/LoginPage'
 import PitsPage from './pages/PitsPage/PitsPage'
+import UserPitsPage from './pages/UserPitsPage/UserPitsPage'
+import ProfilePage from './pages/ProfilePage/ProfilePage' 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 function AppWrapper() {
@@ -21,6 +23,8 @@ function AppWrapper() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/pits" element={<PitsPage />} />
           <Route path="/pits/:pit_id" element={<PitsPage />} />
+          <Route path="/my-pits" element={<UserPitsPage />} /> {/* Добавляем новый маршрут */}
+          <Route path="/profile" element={<ProfilePage />} /> {/* Добавляем маршрут профиля */}
           <Route path="*" element={<div>Страница не найдена</div>} />
         </Routes>
       </HashRouter>

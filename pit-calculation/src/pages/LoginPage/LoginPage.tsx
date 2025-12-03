@@ -109,7 +109,6 @@ const LoginPage: React.FC = () => {
             <Header />
             <Container className="login-container">
                 <Card className="login-card">
-                    {/* Вкладки ВНЕ Card.Body, чтобы они были отдельно */}
                     <div className="card-tabs">
                         <button 
                             className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`}
@@ -128,7 +127,6 @@ const LoginPage: React.FC = () => {
                     </div>
                     
                     <Card.Body className="card-form-body">
-                        {/* Форма входа */}
                         {activeTab === 'login' && (
                             <Form onSubmit={handleLoginSubmit} className="login-form">
                                 <Form.Group className="mb-3">
@@ -194,7 +192,6 @@ const LoginPage: React.FC = () => {
                             </Form>
                         )}
 
-                        {/* Форма регистрации */}
                         {activeTab === 'register' && (
                             <Form onSubmit={handleRegisterSubmit} className="register-form">
                                 <Form.Group className="mb-3">

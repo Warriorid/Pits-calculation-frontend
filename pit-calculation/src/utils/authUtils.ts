@@ -1,7 +1,9 @@
 export const saveUserSession = (username: string, role: number, token: string) => {
+    // Сохраняем токен с префиксом Bearer
+    const fullToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
     localStorage.setItem('username', username);
     localStorage.setItem('role', role.toString());
-    localStorage.setItem('token', token);
+    localStorage.setItem('token', fullToken);
 };
 
 export const loadUserSession = () => {

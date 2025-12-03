@@ -1,4 +1,3 @@
-/* pages/PitsPage/PitsPage.css */
 .main-content {
     width: 100%;
     padding: 20px;
@@ -76,7 +75,6 @@
     background-color: #f8f9fa;
     cursor: not-allowed;
 }
-
 
 .save-params-container {
     margin: 30px 0; 
@@ -246,7 +244,7 @@
     text-align: center;
 }
 
-/* Кнопка удаления/добавления */
+/* Кнопка удаления заявки */
 .delete-cart-container {
     text-align: center;
     margin-top: 30px;
@@ -254,13 +252,9 @@
     border-top: 2px solid #eee;
 }
 
-.delete-cart-form {
-    display: inline-block;
-}
-
 .delete-cart-button {
     padding: 12px 24px;
-    background: rgb(226, 23, 23);
+    background: #dc3545;
     color: white;
     border: none;
     border-radius: 8px;
@@ -269,13 +263,19 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
 }
 
-.delete-cart-button:hover {
-    background: rgb(130, 5, 5);
+.delete-cart-button:hover:not(:disabled) {
+    background: #c82333;
+}
+
+.delete-cart-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 /* Сообщение о пустых материалах */
@@ -312,6 +312,37 @@
 
 .add-materials-button:hover {
     background: #E6B910;
+}
+
+/* Кнопка удаления материала */
+.delete-material-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+    z-index: 1;
+}
+
+.delete-material-button:hover:not(:disabled) {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+.delete-material-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 /* Адаптивность */
@@ -381,7 +412,7 @@
     }
     
     .save-params-container {
-        margin: 20px 0; /* Уменьшаем отступ на мобильных устройствах */
+        margin: 20px 0;
     }
 }
 
@@ -405,91 +436,159 @@
     }
 }
 
-.delete-material-button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: auto;
-    transition: background-color 0.3s;
+.read-only-field {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
 }
 
-.delete-material-button:hover:not(:disabled) {
-    background-color: #c82333;
-}
-
-.delete-material-button:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.card-header {
+/* Стили для заголовка с статусом */
+.pits-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-.coefficient-header {
-    font-weight: bold;
-    color: #555;
+.pit-status .badge {
+    font-size: 1rem;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 500;
 }
 
-/* Стили для кнопки удаления заявки */
+/* Контейнер для кнопок действий */
+.pit-actions-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    flex-wrap: wrap;
+}
+
+/* Кнопка отправки на рассмотрение */
+.form-pit-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-pit-button:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.form-pit-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Кнопка удаления заявки */
 .delete-cart-button {
     background-color: #dc3545;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 12px 25px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    flex: 1;
+    min-width: 200px;
 }
 
-.delete-cart-button:hover {
+.delete-cart-button:hover:not(:disabled) {
     background-color: #c82333;
 }
-/* Добавьте в PitsPage.css */
-.pit-material-card {
-    position: relative;
-    /* остальные стили остаются */
+
+.delete-cart-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
 }
 
-.delete-material-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #dc3545;
+/* Карточка статуса для отправленных заявок */
+.pit-status-info {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.status-card {
+    text-align: center;
+}
+
+.status-card h4 {
+    margin-bottom: 15px;
+    color: #495057;
+}
+
+.status-card p {
+    margin-bottom: 10px;
+    color: #6c757d;
+}
+
+.status-card .small-text {
+    font-size: 0.9rem;
+    color: #868e96;
+}
+
+.back-to-list-button {
+    background-color: #6c757d;
     color: white;
     border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
+    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s;
-    z-index: 1;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    margin-top: 15px;
 }
 
-.delete-material-button:hover:not(:disabled) {
-    background-color: #c82333;
-    transform: scale(1.1);
+.back-to-list-button:hover {
+    background-color: #5a6268;
 }
 
-.delete-material-button:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.7;
+.browse-materials-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    margin-top: 15px;
+}
+
+.browse-materials-button:hover {
+    background-color: #0069d9;
+}
+
+@media (max-width: 768px) {
+    .pits-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .pit-actions-container {
+        flex-direction: column;
+    }
+    
+    .form-pit-button,
+    .delete-cart-button {
+        min-width: 100%;
+    }
 }

@@ -37,9 +37,11 @@ const Header: FC = () => {
                 <div className="header-actions">
                     {isAuthenticated ? (
                         <div className="user-menu">
-                            <div className="user-avatar">
-                                {getUserInitial()}
-                            </div>
+                            <Link to={ROUTES.PROFILE} className="user-avatar-link">
+                                <div className="user-avatar">
+                                    {getUserInitial()}
+                                </div>
+                            </Link>
                             <span className="username">{username}</span>
                             <Button 
                                 variant="outline-danger" 
@@ -68,11 +70,16 @@ const Header: FC = () => {
                     <Link to={ROUTES.MATERIALS} className="menu-item">
                         Материалы
                     </Link>
-                    {/* {isAuthenticated && (
-                        <Link to={ROUTES.PITS} className="menu-item">
-                            Котлованы
-                        </Link>
-                    )} */}
+                    {isAuthenticated && (
+                        <>
+                            <Link to={ROUTES.USER_PITS} className="menu-item">
+                                Мои заявки
+                            </Link>
+                            <Link to={ROUTES.PROFILE} className="menu-item">
+                                Профиль
+                            </Link>
+                        </>
+                    )}
                 </div>
             </nav>
         </header>
