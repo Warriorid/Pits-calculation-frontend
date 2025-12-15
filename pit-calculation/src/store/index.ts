@@ -1,4 +1,3 @@
-// store/index.ts
 import { configureStore } from '@reduxjs/toolkit'
 import searchReducer from './slices/searchSlice'
 import userReducer from './slices/userSlice'

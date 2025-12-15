@@ -73,7 +73,6 @@ const initialState: PitDraftState = {
     currentPitId: 0,
 };
 
-// Вспомогательная функция для получения ID материала
 const getMaterialId = (material: MaterialInPit): number | undefined => {
     return material.material?.id;
 };
@@ -184,7 +183,6 @@ export const deleteMaterialFromPit = createAsyncThunk(
     }
 );
 
-// Новый thunk для удаления заявки
 export const deletePitDraft = createAsyncThunk(
     'pitDraft/deletePitDraft',
     async (
@@ -193,8 +191,6 @@ export const deletePitDraft = createAsyncThunk(
     ) => {
         try {
             await api.pits.pitsDelete(pitId);
-            
-            // Обновляем счетчик черновика
             dispatch(fetchDraftCount());
             
             return pitId;
@@ -234,7 +230,6 @@ const pitDraftSlice = createSlice({
         setDeletingMaterialId: (state, action) => {
             state.deletingMaterialId = action.payload;
         },
-        // Редуктор для сброса состояния удаления заявки
         resetDeletingPit: (state) => {
             state.deletingPit = false;
         }
@@ -340,7 +335,6 @@ const pitDraftSlice = createSlice({
                 state.error = null;
             })
             .addCase(deletePitDraft.fulfilled, (state) => {
-                // Полностью очищаем состояние при успешном удалении заявки
                 state.pit_id = NaN;
                 state.count = 0;
                 state.materials = [];
