@@ -1,6 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import fs from 'fs'
+import path from 'path'
+
+const certPath = path.resolve(__dirname, 'cert.crt')
+const keyPath = path.resolve(__dirname, 'cert.key')
+
+const httpsConfig = fs.existsSync(certPath) && fs.existsSync(keyPath) 
+  ? {
+      key: fs.readFileSync(keyPath),
+      cert: fs.readFileSync(certPath),
+    }
+  : undefined
 
 export default defineConfig({
   plugins: [
@@ -45,6 +57,26 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    https: httpsConfig,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+        configure: (proxy, _options) => {
+          proxy.on('error', (err) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req) => {
+            console.log('Sending Request to the Target:', req.method, req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req) => {
+            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+          });
+        }
+      }
+    }
   }
 })

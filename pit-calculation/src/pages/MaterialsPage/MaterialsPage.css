@@ -8,19 +8,19 @@ body {
     padding: 0;
     background-color: #F8F8F8;
     line-height: 1.6;
-    overflow-x: hidden; 
-    min-width: 100%; 
+    overflow-x: hidden;
 }
 
 #root {
     min-height: 100vh;
-    width: 100%; 
+    width: 100%;
 }
 
 .main-content {
-    width: 100%; 
+    width: 100%;
     padding: 20px;
     position: relative;
+    margin-top: 126px; /* Header (66px) + Bottom menu (60px) */
 }
 
 .loadingBg {
@@ -45,7 +45,7 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     width: 100%;
-    max-width: 1200px; 
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -63,7 +63,7 @@ body {
     font-weight: 500;
 }
 
-/* Новый контейнер для поиска и корзины */
+/* Контейнер для поиска и корзины */
 .search-pit-container {
     position: relative;
     width: 100%;
@@ -77,7 +77,7 @@ body {
 }
 
 .search-wrapper {
-    flex: 0 1 750px; /* Фиксированная максимальная ширина */
+    flex: 0 1 750px;
     margin: 0;
 }
 
@@ -103,40 +103,42 @@ body {
 }
 
 @media (max-width: 768px) {
+    .main-content {
+        margin-top: 116px; /* Меньший отступ на мобильных */
+        padding: 15px;
+    }
+    
     .materials-container {
         grid-template-columns: 1fr;
         max-width: 500px;
         gap: 15px;
     }
     
-    .main-content {
-        padding: 15px;
-    }
-    
     .search-pit-container {
-        flex-direction: row; /* Оставляем в строке */
+        flex-direction: row;
         gap: 15px;
         padding: 0 15px;
         margin: 0 auto 30px;
     }
     
     .search-wrapper {
-        flex: 1; /* Занимает всё доступное пространство */
+        flex: 1;
         max-width: none;
     }
     
-    .pit-button-container {
-        flex-shrink: 0;
+    .bottom-menu {
+        top: 56px; /* Меньше на мобильных */
     }
 }
 
 @media (max-width: 480px) {
-    .materials-container {
-        gap: 12px;
+    .main-content {
+        margin-top: 106px;
+        padding: 10px;
     }
     
-    .main-content {
-        padding: 10px;
+    .materials-container {
+        gap: 12px;
     }
     
     .search-pit-container {
@@ -170,7 +172,6 @@ body {
     }
 }
 
-/* Для очень маленьких экранов */
 @media (max-width: 360px) {
     .search-pit-container {
         gap: 10px;

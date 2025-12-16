@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/Pits-calculation-frontend/dev-sw.js?dev-sw', { scope: '/Pits-calculation-frontend/', type: 'classic' })

@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { useSelector } from 'react-redux'
 import { Material } from '../../modules/materialsApi'
 
 interface SearchState {
@@ -36,15 +35,5 @@ const searchSlice = createSlice({
   }
 })
 
-export const useSearchQuery = () =>
-  useSelector((state: { search: SearchState }) => state.search.searchQuery)
-
-export const useSearchResults = () =>
-  useSelector((state: { search: SearchState }) => state.search.searchResults)
-
-export const useHasSearched = () =>
-  useSelector((state: { search: SearchState }) => state.search.hasSearched)
-
 export const { setSearchQuery, setSearchResults, clearSearch, resetSearchFlag } = searchSlice.actions
-
 export default searchSlice.reducer

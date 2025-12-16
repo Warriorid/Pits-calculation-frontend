@@ -1,42 +1,35 @@
 import { FC, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Spinner } from 'react-bootstrap'
 import { Material, getMaterials } from '../../modules/materialsApi'
 import Header from '../../components/Header/Header'
 import PitButton from '../../components/PitButton/PitButton'
 import SearchField from '../../components/SearchField/SearchField'
 import MaterialCard from '../../components/MaterialCard/MaterialCard'
-import { BreadCrumbs } from '../../components/BreadCrumbs/BreadCrumbs'
-import { ROUTE_LABELS } from '../../Routers'
 import { 
-  useSearchQuery, 
-  useSearchResults, 
-  useHasSearched, 
   setSearchResults,
   clearSearch
 } from '../../store/slices/searchSlice'
 import './MaterialsPage.css'
 
+import type { RootState, AppDispatch } from '../../store'
+
 const MaterialsPage: FC = () => {
-    const dispatch = useDispatch()
-    const searchQuery = useSearchQuery()
-    const searchResults = useSearchResults()
-    const hasSearched = useHasSearched() 
+    const dispatch = useDispatch<AppDispatch>() 
+    const navigate = useNavigate()
+    
+    const searchQuery = useSelector((state: RootState) => state.search.searchQuery)
+    const searchResults = useSelector((state: RootState) => state.search.searchResults)
+    const hasSearched = useSelector((state: RootState) => state.search.hasSearched)
+    
     const [loading, setLoading] = useState(false)
     const [allMaterials, setAllMaterials] = useState<Material[]>([])
-    const navigate = useNavigate()
-
-    const pitData = {
-        pitCount: 0,
-        hasActivePit: true,
-        pitId: 1
-    }
 
     useEffect(() => {
         const loadInitialMaterials = async () => {
             setLoading(true)
-            const materialsData = await getMaterials('')
+            const materialsData = await getMaterials()
             const filteredMaterials = materialsData.filter(material => !material.is_deleted)
             setAllMaterials(filteredMaterials)
             setLoading(false)
@@ -48,8 +41,7 @@ const MaterialsPage: FC = () => {
 
     const handleSearch = () => {
         if (searchQuery.trim() === '') {
-            // ПОЛНОСТЬЮ СБРАСЫВАЕМ ПОИСК
-            dispatch(clearSearch()) // очищаем поле поиска и результаты
+            dispatch(clearSearch())
         } else {
             const filtered = allMaterials.filter(material =>
                 material.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -66,8 +58,6 @@ const MaterialsPage: FC = () => {
         <>
             <Header />
             <main className="main-content">
-                <BreadCrumbs crumbs={[{ label: ROUTE_LABELS.MATERIALS }]} />
-                
                 <div className="search-pit-container">
                     <div className="search-wrapper">
                         <SearchField
@@ -77,11 +67,7 @@ const MaterialsPage: FC = () => {
                             buttonTitle="🔍"
                         />
                     </div>
-                    <PitButton 
-                        pitCount={pitData.pitCount}
-                        hasActivePit={pitData.hasActivePit}
-                        pitId={pitData.pitId}
-                    />
+                    <PitButton />
                 </div>
 
                 {loading && (
