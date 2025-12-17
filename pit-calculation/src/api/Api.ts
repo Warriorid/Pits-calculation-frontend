@@ -20,6 +20,13 @@ export interface HandlerErrorResponse {
   message?: string;
 }
 
+export interface ModelAsyncCalculationResult {
+  calculation_id?: number;
+  material_id?: number;
+  token?: string;
+  volume_result?: number;
+}
+
 export interface ModelLoginRequest {
   password: string;
   username: string;
@@ -64,6 +71,7 @@ export interface ModelPitsCalculationListItem {
   moderator_id?: number;
   pit_depth?: number;
   pit_length?: number;
+  pit_volume?: number;
   pit_width?: number;
   status?: string;
 }
@@ -334,6 +342,27 @@ export class Api<
         path: `/calculation-materials/${calculationId}/${materialId}`,
         method: "DELETE",
         secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+  };
+  calculations = {
+    /**
+     * @description Прием результатов расчета от асинхронного сервиса
+     *
+     * @tags async
+     * @name CompleteCreate
+     * @summary Завершение асинхронного расчета
+     * @request POST:/calculations/complete
+     */
+    completeCreate: (
+      input: ModelAsyncCalculationResult,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, HandlerErrorResponse>({
+        path: `/calculations/complete`,
+        method: "POST",
+        body: input,
         type: ContentType.Json,
         ...params,
       }),

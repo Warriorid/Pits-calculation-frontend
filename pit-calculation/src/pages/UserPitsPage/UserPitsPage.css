@@ -1,8 +1,7 @@
+/* UserPitsPage.css */
+
 .user-pits-page {
-  padding-top: 150px;
-  padding-bottom: 40px;
-  min-height: 100vh;
-  max-width: 1200px;
+  padding: 150px 0;
 }
 
 .page-header {
@@ -136,13 +135,22 @@
   color: #28a745 !important;
 }
 
+/* Блок с кнопками */
 .pit-row-actions {
-  min-width: 100px;
-  text-align: right;
+  min-width: 120px;
+  text-align: center;
 }
 
-.pit-row-actions .btn {
-  min-width: 100px;
+/* Вертикальное расположение кнопок */
+.actions-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actions-column .btn {
+  width: 100%;
+  margin: 0 !important;
 }
 
 /* Badge стилизация */
@@ -212,19 +220,26 @@
   }
   
   .pit-row-actions {
-    text-align: center;
+    width: 100%;
   }
   
-  .pit-row-actions .btn {
-    width: 100%;
+  .actions-column {
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .actions-column .btn {
+    width: auto;
+    flex: 1;
+    min-width: 120px;
   }
 }
 
 @media (max-width: 768px) {
   .user-pits-page {
-    padding-top: 120px;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 20px 15px;
   }
   
   .page-header h1 {
@@ -245,6 +260,14 @@
   
   .filters-header .btn {
     flex: 1;
+  }
+  
+  .actions-column {
+    flex-direction: column;
+  }
+  
+  .actions-column .btn {
+    width: 100%;
   }
 }
 
