@@ -18,7 +18,7 @@ const UserPitsPage: React.FC = () => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Фильтры
+  // Фильтры - по умолчанию сегодняшняя дата
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
@@ -33,16 +33,15 @@ const UserPitsPage: React.FC = () => {
   // Состояние для обработки изменений статуса
   const [processingPits, setProcessingPits] = useState<Set<number>>(new Set());
 
-  const { isAuthenticated, token, role,  } = useSelector((state: RootState) => ({
+  const { isAuthenticated, token, role } = useSelector((state: RootState) => ({
     isAuthenticated: state.user.isAuthenticated,
     token: state.user.token,
-    role: state.user.role,
-    userId: state.user.userId
+    role: state.user.role
   }));
 
   const isModerator = role === 1;
 
-  // Функции для работы с датами (оставляем без изменений)
+  // Функции для работы с датами - сегодняшняя дата по умолчанию
   const getTodayDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -83,12 +82,21 @@ const UserPitsPage: React.FC = () => {
         setEndDate('');
         break;
       case 'custom':
+        // Не изменяем даты при выборе custom - пользователь сам выберет
         break;
       default:
         setStartDate('');
         setEndDate('');
     }
   };
+
+  // Установка сегодняшней даты по умолчанию при загрузке компонента
+  useEffect(() => {
+    const today = getTodayDate();
+    setStartDate(today);
+    setEndDate(today);
+    setSelectedDateRange('today');
+  }, []);
 
   // Функция для обновления объемов и статусов через polling
   const updatePitsVolumeAndStatus = useCallback(async () => {
@@ -160,7 +168,6 @@ const UserPitsPage: React.FC = () => {
     }
     
     pollingIntervalRef.current = setInterval(() => {
-      console.log(`[Polling] Автоматическое обновление в ${new Date().toLocaleTimeString()}`);
       updatePitsVolumeAndStatus();
     }, POLLING_INTERVAL);
     
@@ -169,7 +176,6 @@ const UserPitsPage: React.FC = () => {
 
   // Остановка polling
   const stopPolling = useCallback(() => {
-    console.log('[Polling] Остановка автоматического обновления...');
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
       pollingIntervalRef.current = null;
@@ -191,15 +197,12 @@ const UserPitsPage: React.FC = () => {
   // Управление polling
   useEffect(() => {
     if (isModerator && token) {
-      console.log('[Effect] Запуск автоматического обновления для модератора');
       startPolling();
     } else {
-      console.log('[Effect] Остановка автоматического обновления');
       stopPolling();
     }
     
     return () => {
-      console.log('[Effect] Очистка при размонтировании');
       stopPolling();
     };
   }, [isModerator, token, startPolling, stopPolling]);
@@ -213,8 +216,6 @@ const UserPitsPage: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      console.log('[Fetch] Загрузка заявок...');
-      
       const params: any = {};
       if (statusFilter) params.status = statusFilter;
       if (startDate) params.start_date = startDate;
@@ -223,9 +224,7 @@ const UserPitsPage: React.FC = () => {
       const response = await api(token).pits.pitsList(params);
       const pitsData = response.data as ModelPitsCalculationListItem[];
       
-      console.log('[Fetch] Заявок получено:', pitsData.length);
       setPits(pitsData);
-      
       await fetchPitsDetails(pitsData);
       
     } catch (err: any) {
@@ -246,8 +245,6 @@ const UserPitsPage: React.FC = () => {
     setLoadingDetails(true);
     
     try {
-      console.log('[Fetch Details] Загрузка деталей...');
-      
       const detailsPromises = pitsList.map(async (pit) => {
         try {
           const response = await api(token).pits.pitsDetail(pit.id!);
@@ -263,8 +260,6 @@ const UserPitsPage: React.FC = () => {
       const details = await Promise.all(detailsPromises);
       setPitsWithDetails(details);
       setFilteredPits(details);
-      
-      console.log('[Fetch Details] Детали загружены');
       
     } catch (err: any) {
       console.error('Ошибка при загрузке деталей заявок:', err);
@@ -290,15 +285,9 @@ const UserPitsPage: React.FC = () => {
     setProcessingPits(prev => new Set(prev).add(pitId));
     
     try {
-      console.log('[Approve] Отправка запроса на одобрение заявки:', pitId);
-      
-      // ИСПРАВЛЕНИЕ: Отправляем объект с полем status
       const statusObject = { status: 'completed' } as any;
       await api(token).pits.completeUpdate(pitId, statusObject);
 
-      
-      console.log('[Approve] Заявка успешно одобрена:', pitId);
-      
       alert('Заявка одобрена! Асинхронные расчеты запущены.');
       
       // Немедленно обновляем статус локально
@@ -307,7 +296,6 @@ const UserPitsPage: React.FC = () => {
     } catch (err: any) {
       console.error('[Approve] Полная ошибка:', err);
       
-      // Обработка ошибок в соответствии с бекендом
       if (err.response) {
         switch (err.response.status) {
           case 404:
@@ -363,14 +351,8 @@ const UserPitsPage: React.FC = () => {
     setProcessingPits(prev => new Set(prev).add(pitId));
     
     try {
-      console.log('[Reject] Отправка запроса на отклонение заявки:', pitId);
-      
-      // ИСПРАВЛЕНИЕ: Отправляем объект с полем status
-
       const statusObject = { status: 'rejected' } as any;
       await api(token).pits.completeUpdate(pitId, statusObject);
-      
-      console.log('[Reject] Заявка успешно отклонена:', pitId);
       
       alert('Заявка отклонена.');
       
@@ -380,7 +362,6 @@ const UserPitsPage: React.FC = () => {
     } catch (err: any) {
       console.error('[Reject] Ошибка при отклонении заявки:', err);
       
-      // Обработка ошибок в соответствии с бекендом
       if (err.response) {
         switch (err.response.status) {
           case 404:
@@ -406,11 +387,9 @@ const UserPitsPage: React.FC = () => {
         alert('Ошибка сети или сервера. Проверьте подключение и попробуйте снова.');
       }
       
-      // Перезагружаем данные, чтобы получить актуальный статус
       fetchUserPits();
       
     } finally {
-      // Убираем заявку из обработки
       setProcessingPits(prev => {
         const newSet = new Set(prev);
         newSet.delete(pitId);
@@ -434,7 +413,7 @@ const UserPitsPage: React.FC = () => {
     ));
   };
 
-  // Вспомогательные функции (оставляем без изменений)
+  // Вспомогательные функции
   const calculateInitialPitVolume = (pit: ModelPitsCalculationListItem) => {
     const length = pit.pit_length || 0;
     const width = pit.pit_width || 0;
@@ -442,9 +421,22 @@ const UserPitsPage: React.FC = () => {
     return (length * width * depth).toFixed(2);
   };
 
-  const displayExcavatedVolume = (pit: ModelPitsCalculationListItem) => {
-    return pit.pit_volume ? pit.pit_volume.toFixed(2) : '0.00';
-  };
+ const getMaterialsCount = (pit: ModelPitsCalculationListItem | ModelPitsCalculationWithMaterials): number => {
+  // Если это объект с деталями (ModelPitsCalculationWithMaterials)
+  if ('materials' in pit && pit.materials) {
+    return pit.materials.length;
+  }
+  
+  // Если это простой объект списка (ModelPitsCalculationListItem)
+  const pitWithDetails = pitsWithDetails.find(p => p.id === pit.id);
+  if (pitWithDetails && pitWithDetails.materials) {
+    return pitWithDetails.materials.length;
+  }
+  
+  // Возвращаем calculated_materials_count как запасной вариант
+  return (pit as any).calculated_materials_count || 0;
+};
+
 
   const getAverageCoefficient = (pitWithDetails: ModelPitsCalculationWithMaterials) => {
     if (!pitWithDetails.materials || pitWithDetails.materials.length === 0) {
@@ -460,6 +452,7 @@ const UserPitsPage: React.FC = () => {
         totalCoefficient += coefficient;
         materialsWithCoefficient++;
       }
+      
     });
     
     if (materialsWithCoefficient === 0) {
@@ -469,41 +462,18 @@ const UserPitsPage: React.FC = () => {
     return (totalCoefficient / materialsWithCoefficient).toFixed(2);
   };
 
+  // Применение фильтров по кнопке
   const applyFilters = () => {
-    let result = [...pitsWithDetails];
-    
-    if (statusFilter) {
-      result = result.filter(pit => pit.status?.toLowerCase() === statusFilter.toLowerCase());
-    }
-    
-    if (startDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      result = result.filter(pit => {
-        const pitDate = new Date(pit.created_at || '');
-        pitDate.setHours(0, 0, 0, 0);
-        return pitDate >= start;
-      });
-    }
-    
-    if (endDate) {
-      const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999);
-      result = result.filter(pit => {
-        const pitDate = new Date(pit.created_at || '');
-        return pitDate <= end;
-      });
-    }
-    
-    setFilteredPits(result);
+    fetchUserPits();
   };
 
+  // Сброс фильтров - устанавливает сегодняшнюю дату и очищает статус
   const handleResetFilters = () => {
+    const today = getTodayDate();
     setStatusFilter('');
-    setStartDate('');
-    setEndDate('');
-    setSelectedDateRange('all');
-    setFilteredPits(pitsWithDetails);
+    setStartDate(today);
+    setEndDate(today);
+    setSelectedDateRange('today');
   };
 
   const getStatusBadge = (status: string) => {
@@ -553,11 +523,6 @@ const UserPitsPage: React.FC = () => {
       <Container className="user-pits-page">
         <div className="page-header">
           <h1>{isModerator ? 'Заявки на модерацию' : 'Мои заявки'}</h1>
-          {isModerator && (
-            <div className="polling-indicator">
-          
-            </div>
-          )}
         </div>
 
         {error && (
@@ -610,10 +575,10 @@ const UserPitsPage: React.FC = () => {
                   value={selectedDateRange}
                   onChange={(e) => handleDateRangeChange(e.target.value)}
                 >
-                  <option value="all">За все время</option>
                   <option value="today">Сегодня</option>
                   <option value="week">За неделю</option>
                   <option value="month">За месяц</option>
+                  <option value="all">За все время</option>
                   <option value="custom">Выбрать даты</option>
                 </Form.Select>
               </Form.Group>
@@ -665,130 +630,83 @@ const UserPitsPage: React.FC = () => {
             <p className="text-muted">Пока у вас нет заявок, соответствующих выбранным фильтрам</p>
           </div>
         ) : (
-          <>
-            
-            
-            <div className="pits-list">
-              {filteredPits.map((pit) => {
-                const pitFromList = getPitFromList(pit.id!);
-                const isProcessing = isPitProcessing(pit.id!);
-                
-                return (
-                  <div 
-                    key={pit.id}
-                    className={`pit-row ${pit.status === 'draft' ? 'draft-row' : ''} ${isProcessing ? 'processing-row' : ''}`}
-                    onClick={() => !isProcessing && handlePitClick(pit.id!)}
-                  >
-                    <div className="pit-row-content">
-                      <div className="pit-row-id">
-                        <strong>Заявка #{pit.id}</strong>
-                        {isProcessing && (
-                          <Badge bg="warning" className="ms-2">
-                            Обработка...
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      <div className="pit-row-status">
-                        {getStatusBadge(pit.status || '')}
-                      </div>
-                      
-                      <div className="pit-row-dates">
-                        <div className="date-info">
-                          <span className="date-label">Создана:</span>
-                          <span className="date-value">
-                            {formatRussianDate(pit.created_at)}
-                          </span>
-                        </div>
-                        
-                        {pit.formed_at && (
-                          <div className="date-info">
-                            <span className="date-label">Сформирована:</span>
-                            <span className="date-value">
-                              {formatRussianDate(pit.formed_at)}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {pit.completed_at && (
-                          <div className="date-info">
-                            <span className="date-label">Завершена:</span>
-                            <span className="date-value">
-                              {formatRussianDate(pit.completed_at)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="pit-row-volumes">
-                        <div className="volume-info">
-                          <span>Объем котлована:</span>
-                          <strong>{pit.pit_length && pit.pit_width && pit.pit_depth 
-                            ? calculateInitialPitVolume(pit) 
-                            : '0.00'} м³</strong>
-                        </div>
-                        <div className="volume-info">
-                          <span>Объем после выемки:</span>
-                          <strong className="excavated-volume">
-                            {pitFromList ? displayExcavatedVolume(pitFromList) : '0.00'} м³
-                          </strong>
-                          {pit.status === 'completed' && (
-                            <span className="calculating-badge">
-                              
-                            </span>
-                          )}
-                        </div>
-                        <div className="volume-info">
-                          <span>Коэф. разрыхления:</span>
-                          <strong>{getAverageCoefficient(pit)}</strong>
-                        </div>
-                      </div>
+          <div className="pits-list">
+            {filteredPits.map((pit) => {
+              const pitFromList = getPitFromList(pit.id!);
+              const isProcessing = isPitProcessing(pit.id!);
+              
+              return (
+                <div 
+                  key={pit.id}
+                  className={`pit-row ${pit.status === 'draft' ? 'draft-row' : ''} ${isProcessing ? 'processing-row' : ''}`}
+                  onClick={() => !isProcessing && handlePitClick(pit.id!)}
+                >
+                  <div className="pit-row-content">
+                    <div className="pit-row-id">
+                      <strong>Заявка #{pit.id}</strong>
+                      {isProcessing && (
+                        <Badge bg="warning" className="ms-2">
+                          Обработка...
+                        </Badge>
+                      )}
                     </div>
                     
-                    <div className="pit-row-actions">
-                      {isModerator && pit.status === 'formed' ? (
-                        <div className="actions-column">
-                          <Button 
-                            variant="primary" 
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handlePitClick(pit.id!);
-                            }}
-                            className="mb-2"
-                            disabled={isProcessing}
-                          >
-                            Просмотреть
-                          </Button>
-                          <Button 
-                            variant="success" 
-                            size="sm"
-                            onClick={(e) => handleApprovePit(pit.id!, e)}
-                            className="mb-2"
-                            disabled={isProcessing}
-                          >
-                            {isProcessing ? (
-                              <>
-                                <Spinner size="sm" animation="border" className="me-2" />
-                                Одобрение...
-                              </>
-                            ) : 'Одобрить'}
-                          </Button>
-                          <Button 
-                            variant="danger" 
-                            size="sm"
-                            onClick={(e) => handleRejectPit(pit.id!, e)}
-                            disabled={isProcessing}
-                          >
-                            {isProcessing ? (
-                              <>
-                                <Spinner size="sm" animation="border" className="me-2" />
-                                Отклонение...
-                              </>
-                            ) : 'Отклонить'}
-                          </Button>
+                    <div className="pit-row-status">
+                      {getStatusBadge(pit.status || '')}
+                    </div>
+                    
+                    <div className="pit-row-dates">
+                      <div className="date-info">
+                        <span className="date-label">Создана:</span>
+                        <span className="date-value">
+                          {formatRussianDate(pit.created_at)}
+                        </span>
+                      </div>
+                      
+                      {pit.formed_at && (
+                        <div className="date-info">
+                          <span className="date-label">Сформирована:</span>
+                          <span className="date-value">
+                            {formatRussianDate(pit.formed_at)}
+                          </span>
                         </div>
-                      ) : (
+                      )}
+                      
+                      {pit.completed_at && (
+                        <div className="date-info">
+                          <span className="date-label">Завершена:</span>
+                          <span className="date-value">
+                            {formatRussianDate(pit.completed_at)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="pit-row-volumes">
+                      <div className="volume-info">
+                        <span>Объем котлована:</span>
+                        <strong>{pit.pit_length && pit.pit_width && pit.pit_depth 
+                          ? calculateInitialPitVolume(pit) 
+                          : '0.00'} м³</strong>
+                      </div>
+                      
+                      <div className="volume-info">
+                        <span>Количество материалов:</span>
+                        <strong className="materials-count">
+                          {getMaterialsCount(pit)} шт
+                        </strong>
+                      </div>
+                      
+                      <div className="volume-info">
+                        <span>Коэф. разрыхления:</span>
+                        <strong>{getAverageCoefficient(pit)}</strong>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="pit-row-actions">
+                    {isModerator && pit.status === 'formed' ? (
+                      <div className="actions-column">
                         <Button 
                           variant="primary" 
                           size="sm"
@@ -796,17 +714,57 @@ const UserPitsPage: React.FC = () => {
                             e.stopPropagation();
                             handlePitClick(pit.id!);
                           }}
+                          className="mb-2"
                           disabled={isProcessing}
                         >
                           Просмотреть
                         </Button>
-                      )}
-                    </div>
+                        <Button 
+                          variant="success" 
+                          size="sm"
+                          onClick={(e) => handleApprovePit(pit.id!, e)}
+                          className="mb-2"
+                          disabled={isProcessing}
+                        >
+                          {isProcessing ? (
+                            <>
+                              <Spinner size="sm" animation="border" className="me-2" />
+                              Одобрение...
+                            </>
+                          ) : 'Одобрить'}
+                        </Button>
+                        <Button 
+                          variant="danger" 
+                          size="sm"
+                          onClick={(e) => handleRejectPit(pit.id!, e)}
+                          disabled={isProcessing}
+                        >
+                          {isProcessing ? (
+                            <>
+                              <Spinner size="sm" animation="border" className="me-2" />
+                              Отклонение...
+                            </>
+                          ) : 'Отклонить'}
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button 
+                        variant="primary" 
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePitClick(pit.id!);
+                        }}
+                        disabled={isProcessing}
+                      >
+                        Просмотреть
+                      </Button>
+                    )}
                   </div>
-                );
-              })}
-            </div>
-          </>
+                </div>
+              );
+            })}
+          </div>
         )}
       </Container>
     </>
