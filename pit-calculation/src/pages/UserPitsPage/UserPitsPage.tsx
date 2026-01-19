@@ -18,19 +18,16 @@ const UserPitsPage: React.FC = () => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Фильтры - по умолчанию сегодняшняя дата
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-  const [selectedDateRange, setSelectedDateRange] = useState<string>('today');
+  const [selectedDateRange, setSelectedDateRange] = useState<string>('all');
   
-  // Short polling
-  const POLLING_INTERVAL = 7000; // 7 секунд
+  const POLLING_INTERVAL = 7000;
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isFetchingRef = useRef(false);
   const lastUpdateTimeRef = useRef<number>(Date.now());
 
-  // Состояние для обработки изменений статуса
   const [processingPits, setProcessingPits] = useState<Set<number>>(new Set());
 
   const { isAuthenticated, token, role } = useSelector((state: RootState) => ({
@@ -41,7 +38,6 @@ const UserPitsPage: React.FC = () => {
 
   const isModerator = role === 1;
 
-  // Функции для работы с датами - сегодняшняя дата по умолчанию
   const getTodayDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -82,7 +78,6 @@ const UserPitsPage: React.FC = () => {
         setEndDate('');
         break;
       case 'custom':
-        // Не изменяем даты при выборе custom - пользователь сам выберет
         break;
       default:
         setStartDate('');
@@ -90,12 +85,12 @@ const UserPitsPage: React.FC = () => {
     }
   };
 
-  // Установка сегодняшней даты по умолчанию при загрузке компонента
+  // Установка начальных значений при загрузке компонента
   useEffect(() => {
-    const today = getTodayDate();
-    setStartDate(today);
-    setEndDate(today);
-    setSelectedDateRange('today');
+    setStatusFilter('');
+    setStartDate('');
+    setEndDate('');
+    setSelectedDateRange('all');
   }, []);
 
   // Функция для обновления объемов и статусов через polling
@@ -104,7 +99,6 @@ const UserPitsPage: React.FC = () => {
     
     try {
       isFetchingRef.current = true;
-      console.log(`[Polling ${new Date().toLocaleTimeString()}] Обновление объемов и статусов...`);
       
       const params: any = {};
       if (statusFilter) params.status = statusFilter;
@@ -145,7 +139,6 @@ const UserPitsPage: React.FC = () => {
       });
       
       lastUpdateTimeRef.current = Date.now();
-      console.log(`[Polling ${new Date().toLocaleTimeString()}] Обновление завершено`);
       
     } catch (err: any) {
       console.error('Ошибка при обновлении объемов и статусов:', err);
@@ -160,8 +153,6 @@ const UserPitsPage: React.FC = () => {
   // Функция для запуска short polling
   const startPolling = useCallback(() => {
     if (!isModerator) return;
-    
-    console.log('[Polling] Запуск автоматического обновления...');
     
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
@@ -281,7 +272,6 @@ const UserPitsPage: React.FC = () => {
       return;
     }
     
-    // Добавляем заявку в обработку
     setProcessingPits(prev => new Set(prev).add(pitId));
     
     try {
@@ -290,7 +280,6 @@ const UserPitsPage: React.FC = () => {
 
       alert('Заявка одобрена! Асинхронные расчеты запущены.');
       
-      // Немедленно обновляем статус локально
       updatePitStatusLocal(pitId, 'completed');
       
     } catch (err: any) {
@@ -321,11 +310,9 @@ const UserPitsPage: React.FC = () => {
         alert('Ошибка сети или сервера. Проверьте подключение и попробуйте снова.');
       }
       
-      // Перезагружаем данные, чтобы получить актуальный статус
       fetchUserPits();
       
     } finally {
-      // Убираем заявку из обработки
       setProcessingPits(prev => {
         const newSet = new Set(prev);
         newSet.delete(pitId);
@@ -347,7 +334,6 @@ const UserPitsPage: React.FC = () => {
       return;
     }
     
-    // Добавляем заявку в обработку
     setProcessingPits(prev => new Set(prev).add(pitId));
     
     try {
@@ -356,7 +342,6 @@ const UserPitsPage: React.FC = () => {
       
       alert('Заявка отклонена.');
       
-      // Немедленно обновляем статус локально
       updatePitStatusLocal(pitId, 'rejected');
       
     } catch (err: any) {
@@ -421,22 +406,18 @@ const UserPitsPage: React.FC = () => {
     return (length * width * depth).toFixed(2);
   };
 
- const getMaterialsCount = (pit: ModelPitsCalculationListItem | ModelPitsCalculationWithMaterials): number => {
-  // Если это объект с деталями (ModelPitsCalculationWithMaterials)
-  if ('materials' in pit && pit.materials) {
-    return pit.materials.length;
-  }
-  
-  // Если это простой объект списка (ModelPitsCalculationListItem)
-  const pitWithDetails = pitsWithDetails.find(p => p.id === pit.id);
-  if (pitWithDetails && pitWithDetails.materials) {
-    return pitWithDetails.materials.length;
-  }
-  
-  // Возвращаем calculated_materials_count как запасной вариант
-  return (pit as any).calculated_materials_count || 0;
-};
-
+  const getMaterialsCount = (pit: ModelPitsCalculationListItem | ModelPitsCalculationWithMaterials): number => {
+    if ('materials' in pit && pit.materials) {
+      return pit.materials.length;
+    }
+    
+    const pitWithDetails = pitsWithDetails.find(p => p.id === pit.id);
+    if (pitWithDetails && pitWithDetails.materials) {
+      return pitWithDetails.materials.length;
+    }
+    
+    return (pit as any).calculated_materials_count || 0;
+  };
 
   const getAverageCoefficient = (pitWithDetails: ModelPitsCalculationWithMaterials) => {
     if (!pitWithDetails.materials || pitWithDetails.materials.length === 0) {
@@ -452,7 +433,6 @@ const UserPitsPage: React.FC = () => {
         totalCoefficient += coefficient;
         materialsWithCoefficient++;
       }
-      
     });
     
     if (materialsWithCoefficient === 0) {
@@ -467,13 +447,13 @@ const UserPitsPage: React.FC = () => {
     fetchUserPits();
   };
 
-  // Сброс фильтров - устанавливает сегодняшнюю дату и очищает статус
+  // Сброс фильтров - устанавливает "за все время" и очищает статус
   const handleResetFilters = () => {
-    const today = getTodayDate();
     setStatusFilter('');
-    setStartDate(today);
-    setEndDate(today);
-    setSelectedDateRange('today');
+    setStartDate('');
+    setEndDate('');
+    setSelectedDateRange('all');
+    fetchUserPits();
   };
 
   const getStatusBadge = (status: string) => {
@@ -512,7 +492,6 @@ const UserPitsPage: React.FC = () => {
     navigate(`/pits/${pitId}`);
   };
 
-  // Проверка, обрабатывается ли заявка
   const isPitProcessing = (pitId: number) => {
     return processingPits.has(pitId);
   };
@@ -575,10 +554,10 @@ const UserPitsPage: React.FC = () => {
                   value={selectedDateRange}
                   onChange={(e) => handleDateRangeChange(e.target.value)}
                 >
+                  <option value="all">За все время</option>
                   <option value="today">Сегодня</option>
                   <option value="week">За неделю</option>
                   <option value="month">За месяц</option>
-                  <option value="all">За все время</option>
                   <option value="custom">Выбрать даты</option>
                 </Form.Select>
               </Form.Group>
